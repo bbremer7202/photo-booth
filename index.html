@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Wedding Photo Booth</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple:        #7c3aed;
+  --purple-light:  #a78bfa;
+  --purple-dark:   #5b21b6;
+  --purple-pale:   #f5f0ff;
+  --teal:          #0d9488;
+  --teal-light:    #2dd4bf;
+  --teal-pale:     #f0fdfa;
+  --bg:            #faf7ff;
+  --text:          #1e1b2e;
+  --text-soft:     rgba(30,27,46,0.5);
+  --border:        rgba(124,58,237,0.2);
+  --gradient:      linear-gradient(135deg, #7c3aed 0%, #0d9488 100%);
+  --gradient-soft: linear-gradient(135deg, #ede9fe 0%, #ccfbf1 100%);
+  --font-d: 'Playfair Display', serif;
+  --font-b: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  font-family: var(--font-b);
+  color: var(--text);
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body::before, body::after {
+  content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(70px);
+}
+body::before { width:450px;height:450px;background:rgba(124,58,237,0.1);top:-120px;left:-120px; }
+body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:-90px;right:-90px; }
+
+.screen {
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 24px;opacity:0;pointer-events:none;
+  transition:opacity 0.45s;z-index:1;gap:10px;
+}
+.screen.active { opacity:1;pointer-events:all; }
+
+.divider { display:flex;align-items:center;gap:10px;width:100%;max-width:320px;margin:4px 0; }
+.divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--gradient);opacity:0.3; }
+.div-dot { width:6px;height:6px;border-radius:50%;background:var(--gradient); }
+
+/* ── Gradient text helper ── */
+.grad-text {
+  background:var(--gradient);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-style:italic;
+}
+
+/* ════════════════ WELCOME ════════════════ */
+.monogram-ring {
+  width:110px;height:110px;border-radius:50%;
+  background:var(--gradient);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 10px rgba(124,58,237,0.1),0 12px 40px rgba(124,58,237,0.25);
+  position:relative;
+  animation:float 3.2s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
+.monogram-ring::after { content:'';position:absolute;inset:5px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25); }
+.monogram-text { font-family:var(--font-d);font-size:36px;font-style:italic;color:white;font-weight:700;letter-spacing:-1px;z-index:1; }
+.welcome-title { font-family:var(--font-d);font-size:clamp(26px,7vw,44px);font-weight:400;text-align:center;line-height:1.2; }
+.welcome-date { font-size:12px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-soft); }
+.welcome-desc { font-size:clamp(13px,3.2vw,15px);color:var(--text-soft);text-align:center;line-height:1.7;max-width:270px;font-weight:300; }
+
+/* ════════════════ BUTTONS ════════════════ */
+.btn {
+  width:100%;max-width:300px;padding:14px 40px;border-radius:50px;
+  font-family:var(--font-b);font-size:15px;font-weight:500;cursor:pointer;
+  border:none;text-align:center;transition:transform 0.15s,box-shadow 0.15s;
+}
+.btn:active { transform:scale(0.96); }
+.btn-primary { background:var(--gradient);color:white;box-shadow:0 6px 24px rgba(124,58,237,0.35); }
+.btn-teal    { background:linear-gradient(135deg,#0d9488,#2dd4bf);color:white;box-shadow:0 6px 24px rgba(13,148,136,0.3); }
+.btn-outline { background:transparent;color:var(--purple);border:1.5px solid rgba(124,58,237,0.4); }
+
+/* ════════════════ SCREEN HEADING ════════════════ */
+.s-head { font-family:var(--font-d);font-size:clamp(22px,5.5vw,34px);font-weight:400;text-align:center; }
+.s-sub  { font-size:clamp(13px,3vw,15px);color:var(--text-soft);text-align:center;max-width:270px;line-height:1.6;font-weight:300; }
+
+/* ════════════════ EMAIL SCREEN ════════════════ */
+.tab-row {
+  display:flex;background:var(--gradient-soft);border-radius:50px;
+  padding:4px;width:100%;max-width:300px;border:1px solid var(--border);
+}
+.tab-btn {
+  flex:1;padding:10px;border-radius:50px;font-size:13px;font-weight:500;
+  cursor:pointer;border:none;background:transparent;color:var(--text-soft);
+  transition:all 0.25s;font-family:var(--font-b);
+}
+.tab-btn.active { background:var(--gradient);color:white;box-shadow:0 3px 12px rgba(124,58,237,0.3); }
+.tab-pane { display:none;width:100%;max-width:300px;flex-direction:column;align-items:center;gap:10px; }
+.tab-pane.active { display:flex; }
+.email-in {
+  width:100%;padding:14px 18px;font-family:var(--font-b);font-size:16px;
+  border:1.5px solid var(--border);border-radius:14px;
+  background:rgba(255,255,255,0.85);color:var(--text);outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.email-in:focus { border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,0.12); }
+.skip-link { font-size:13px;color:var(--text-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px; }
+
+/* QR Card */
+.qr-card {
+  background:white;border-radius:20px;padding:20px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  box-shadow:0 4px 24px rgba(124,58,237,0.1);border:1px solid var(--border);width:100%;
+}
+.qr-wrap {
+  width:160px;height:160px;border-radius:12px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:white;position:relative;border:2px solid rgba(124,58,237,0.12);
+}
+.qr-wrap img { width:100%;height:100%;display:block; }
+.qr-c { position:absolute;width:18px;height:18px;border-style:solid;border-color:var(--purple); }
+.qr-c.tl{top:5px;left:5px;border-width:2px 0 0 2px}
+.qr-c.tr{top:5px;right:5px;border-width:2px 2px 0 0}
+.qr-c.bl{bottom:5px;left:5px;border-width:0 0 2px 2px}
+.qr-c.br{bottom:5px;right:5px;border-width:0 2px 2px 0}
+.qr-label { font-size:13px;color:var(--text-soft);text-align:center;line-height:1.55;max-width:210px; }
+.qr-label strong { color:var(--purple);font-weight:500; }
+
+/* ════════════════ CAMERA ════════════════ */
+#screen-camera { padding:0; }
+#screen-camera.active { display:flex; }
+.cam-wrap { position:relative;width:100%;height:100vh;background:#0d0d1a;overflow:hidden;display:flex;align-items:center;justify-content:center; }
+#video { width:100%;height:100%;object-fit:cover;transform:scaleX(-1);position:absolute;inset:0;transition:filter 0.3s; }
+#video.f-noir    { filter:grayscale(1) contrast(1.15) brightness(0.95); }
+#video.f-vintage { filter:sepia(0.65) contrast(1.1) brightness(1.08) saturate(0.85); }
+#video.f-vivid   { filter:saturate(2) contrast(1.15) brightness(1.05); }
+#video.f-cool    { filter:hue-rotate(25deg) saturate(1.3) brightness(1.05); }
+#video.f-warm    { filter:sepia(0.25) saturate(1.6) hue-rotate(-15deg) brightness(1.05); }
+#video.f-dreamy  { filter:brightness(1.15) saturate(0.75) contrast(0.88) blur(0.5px); }
+#video.f-neon    { filter:saturate(3.2) contrast(1.35) hue-rotate(260deg) brightness(0.92); }
+#video.f-retro   { filter:sepia(1) hue-rotate(295deg) saturate(1.9) contrast(1.12); }
+#video.f-pop     { filter:saturate(2.5) contrast(1.25) brightness(1.08) hue-rotate(10deg); }
+
+.cam-grad-t { position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(to bottom,rgba(13,13,26,0.75),transparent);pointer-events:none;z-index:5; }
+.cam-grad-b { position:absolute;bottom:0;left:0;right:0;height:240px;background:linear-gradient(to top,rgba(13,13,26,0.92),transparent);pointer-events:none;z-index:5; }
+
+.cam-frame { position:absolute;inset:14px;pointer-events:none;z-index:6; }
+.fc { position:absolute;width:34px;height:34px;border-style:solid; }
+.fc.tl{top:0;left:0;border-width:2px 0 0 2px;border-color:var(--teal-light)}
+.fc.tr{top:0;right:0;border-width:2px 2px 0 0;border-color:var(--teal-light)}
+.fc.bl{bottom:0;left:0;border-width:0 0 2px 2px;border-color:var(--purple-light)}
+.fc.br{bottom:0;right:0;border-width:0 2px 2px 0;border-color:var(--purple-light)}
+
+.cam-top { position:absolute;top:0;left:0;right:0;padding:18px 18px 0;display:flex;justify-content:space-between;align-items:center;z-index:10; }
+.cam-count-badge { font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);background:rgba(0,0,0,0.4);padding:6px 14px;border-radius:20px;letter-spacing:0.06em; }
+.cam-dots { display:flex;gap:7px;align-items:center; }
+.dot { width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.5);background:transparent;transition:all 0.3s; }
+.dot.taken { background:var(--teal-light);border-color:var(--teal-light);box-shadow:0 0 8px var(--teal-light); }
+
+.countdown-n {
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);
+  font-family:var(--font-d);font-size:clamp(110px,30vw,200px);font-weight:700;
+  color:white;text-shadow:0 0 60px rgba(167,139,250,0.9),0 4px 20px rgba(0,0,0,0.6);
+  opacity:0;transition:opacity 0.15s;z-index:20;pointer-events:none;line-height:1;
+}
+.countdown-n.show { opacity:1; }
+
+.flash { position:absolute;inset:0;background:white;opacity:0;pointer-events:none;z-index:30;transition:opacity 0.07s; }
+.flash.pop { opacity:1; }
+
+.cam-bottom { position:absolute;bottom:0;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding-bottom:20px;gap:10px; }
+.cam-msg { font-size:14px;color:rgba(255,255,255,0.72);font-style:italic;letter-spacing:0.03em; }
+.shutter-row { display:flex;align-items:center;justify-content:center;gap:32px; }
+.shutter-btn {
+  width:76px;height:76px;border-radius:50%;background:white;
+  border:4px solid rgba(255,255,255,0.25);cursor:pointer;
+  box-shadow:0 0 0 5px rgba(167,139,250,0.25),0 8px 32px rgba(0,0,0,0.45);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 0.15s;
+}
+.shutter-btn::after { content:'';width:56px;height:56px;border-radius:50%;background:var(--gradient); }
+.shutter-btn:active { transform:scale(0.92); }
+.shutter-btn:disabled { opacity:0.3;pointer-events:none; }
+
+/* Filter strip */
+.filter-strip {
+  display:flex;gap:10px;padding:2px 18px 6px;
+  overflow-x:auto;width:100%;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.filter-strip::-webkit-scrollbar { display:none; }
+.fchip { display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;padding:2px; }
+.fthumb {
+  width:54px;height:54px;border-radius:11px;overflow:hidden;
+  border:2.5px solid transparent;transition:border-color 0.2s,box-shadow 0.2s;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.fchip.active .fthumb { border-color:var(--teal-light);box-shadow:0 0 0 2px rgba(45,212,191,0.4); }
+.flabel { font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap; }
+
+/* ════════════════ PREVIEW ════════════════ */
+.strip-card {
+  background:white;border-radius:4px;
+  padding:10px 10px 6px;
+  box-shadow:0 16px 60px rgba(124,58,237,0.15),0 2px 8px rgba(0,0,0,0.06);
+  display:flex;flex-direction:column;align-items:center;max-width:215px;
+  position:relative;border:2px solid rgba(124,58,237,0.1);
+}
+.strip-card::before { content:'';position:absolute;inset:5px;border:1px solid rgba(124,58,237,0.07);border-radius:2px;pointer-events:none; }
+.strip-imgs { display:flex;flex-direction:column;gap:5px; }
+.strip-img { width:185px;height:124px;object-fit:cover;display:block;border-radius:2px; }
+.strip-footer { padding:7px 0 3px;text-align:center;width:100%; }
+.strip-names { font-family:var(--font-d);font-size:12.5px;font-style:italic;letter-spacing:0.04em; }
+.strip-date  { font-size:9px;color:var(--text-soft);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px; }
+.strip-hearts { font-size:9px;color:var(--teal);margin-top:2px;letter-spacing:4px; }
+.action-col { display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px; }
+
+/* ════════════════ SENDING / DONE ════════════════ */
+.spinner { width:52px;height:52px;border-radius:50%;border:3px solid rgba(124,58,237,0.15);border-top-color:var(--purple);border-right-color:var(--teal);animation:spin 0.9s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.done-ring {
+  width:86px;height:86px;border-radius:50%;background:var(--gradient);
+  display:flex;align-items:center;justify-content:center;font-size:38px;
+  box-shadow:0 0 0 10px rgba(124,58,237,0.1),0 10px 40px rgba(124,58,237,0.3);
+  animation:popIn 0.55s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{transform:scale(0.2);opacity:0}to{transform:scale(1);opacity:1} }
+.done-msg { font-size:clamp(13px,3vw,15px);color:var(--text-soft);text-align:center;max-width:260px;line-height:1.7; }
+
+/* ════════════════ SETTINGS ════════════════ */
+#settings-btn {
+  position:fixed;top:14px;left:14px;z-index:100;
+  background:rgba(255,255,255,0.85);border:1px solid var(--border);border-radius:10px;
+  padding:8px 14px;font-size:12px;color:var(--text-soft);cursor:pointer;
+  font-family:var(--font-b);font-weight:500;letter-spacing:0.06em;backdrop-filter:blur(8px);
+}
+#settings-panel {
+  position:fixed;inset:0;background:var(--bg);z-index:200;
+  display:none;flex-direction:column;padding:52px 24px 32px;overflow-y:auto;gap:14px;
+}
+#settings-panel.open { display:flex; }
+.s-title { font-family:var(--font-d);font-size:28px;font-weight:400;margin-bottom:4px; }
+.sl { font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:5px;display:block; }
+.si {
+  width:100%;padding:12px 16px;font-family:var(--font-b);font-size:15px;
+  border:1.5px solid var(--border);border-radius:12px;background:white;color:var(--text);outline:none;
+}
+.si:focus { border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,0.1); }
+.s-row { display:flex;flex-direction:column;gap:6px; }
+.s-note {
+  background:linear-gradient(135deg,rgba(124,58,237,0.05),rgba(13,148,136,0.05));
+  border-radius:12px;padding:14px;font-size:13.5px;color:rgba(30,27,46,0.65);
+  line-height:1.65;border-left:3px solid var(--purple);
+}
+.s-note strong { color:var(--purple); }
+.s-note a { color:var(--teal); }
+
+#comp-canvas { display:none; }
+</style>
+</head>
+<body>
+
+<!-- ══ WELCOME ══ -->
+<div id="screen-welcome" class="screen active">
+  <div class="monogram-ring"><span class="monogram-text" id="monogram">E&L</span></div>
+  <h1 class="welcome-title">Welcome to<br><span class="grad-text" id="disp-names">Emma & Lucas'</span></h1>
+  <p class="welcome-date" id="disp-date">June 14, 2026</p>
+  <div class="divider"><div class="div-dot"></div></div>
+  <p class="welcome-desc">Strike a pose and take home a gorgeous photo strip from today's celebration! 🎉</p>
+  <button class="btn btn-primary" onclick="goTo('email')" style="margin-top:6px">📸 Start the Booth!</button>
+</div>
+
+<!-- ══ EMAIL ══ -->
+<div id="screen-email" class="screen">
+  <h2 class="s-head">Get your <span class="grad-text">photos</span></h2>
+  <p class="s-sub">We'll email your photo strip right after you're done!</p>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('type')">✏️ Type Email</button>
+    <button class="tab-btn"        onclick="switchTab('qr')">📱 Scan QR</button>
+  </div>
+
+  <!-- Type tab -->
+  <div class="tab-pane active" id="pane-type">
+    <input class="email-in" type="email" id="email-input" placeholder="you@example.com" inputmode="email" autocomplete="email">
+    <button class="btn btn-primary" onclick="proceedFromEmail()">Continue →</button>
+    <span class="skip-link" onclick="skipEmail()">Skip — I'll just download</span>
+  </div>
+
+  <!-- QR tab -->
+  <div class="tab-pane" id="pane-qr">
+    <div class="qr-card">
+      <div class="qr-wrap">
+        <img id="qr-img" src="" alt="QR Code">
+        <div class="qr-c tl"></div><div class="qr-c tr"></div>
+        <div class="qr-c bl"></div><div class="qr-c br"></div>
+      </div>
+      <p class="qr-label">Scan with your phone 📲<br><strong>Enter your email on your phone</strong><br>then tap Continue here</p>
+    </div>
+    <button class="btn btn-teal" onclick="proceedFromEmail()">I've submitted — Continue →</button>
+    <span class="skip-link" onclick="skipEmail()">Skip — I'll just download</span>
+  </div>
+</div>
+
+<!-- ══ CAMERA ══ -->
+<div id="screen-camera" class="screen">
+  <div class="cam-wrap">
+    <video id="video" autoplay playsinline muted></video>
+    <div class="cam-grad-t"></div>
+    <div class="cam-grad-b"></div>
+    <div class="cam-frame">
+      <div class="fc tl"></div><div class="fc tr"></div>
+      <div class="fc bl"></div><div class="fc br"></div>
+    </div>
+    <div class="flash" id="flash"></div>
+    <div class="countdown-n" id="countdown"></div>
+
+    <div class="cam-top">
+      <div class="cam-count-badge" id="cam-badge">Photo 1 of 3</div>
+      <div class="cam-dots" id="cam-dots"></div>
+    </div>
+
+    <div class="cam-bottom">
+      <p class="cam-msg" id="cam-msg">Tap the button when ready! 🎉</p>
+      <div class="shutter-row">
+        <button class="shutter-btn" id="shutter" onclick="startCountdown()"></button>
+      </div>
+      <div class="filter-strip" id="filter-strip"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PREVIEW ══ -->
+<div id="screen-preview" class="screen">
+  <h2 class="s-head">Your <span class="grad-text">Strip</span> ✨</h2>
+  <div class="strip-card">
+    <div class="strip-imgs" id="strip-imgs"></div>
+    <div class="strip-footer">
+      <div class="strip-names grad-text" id="s-names">Emma & Lucas</div>
+      <div class="strip-date" id="s-date">June 14, 2026</div>
+      <div class="strip-hearts">♥ ♥ ♥</div>
+    </div>
+  </div>
+  <div class="action-col">
+    <button class="btn btn-primary" id="send-btn" onclick="sendOrDownload()">✉ Send to My Email</button>
+    <button class="btn btn-outline" onclick="downloadStrip()">⬇ Download</button>
+    <button class="btn btn-outline" onclick="retake()">↩ Retake</button>
+  </div>
+</div>
+
+<!-- ══ SENDING ══ -->
+<div id="screen-sending" class="screen">
+  <div class="spinner"></div>
+  <h2 class="s-head">Sending your <span class="grad-text">memories…</span></h2>
+  <p class="s-sub">Just a moment!</p>
+</div>
+
+<!-- ══ DONE ══ -->
+<div id="screen-done" class="screen">
+  <div class="done-ring">💌</div>
+  <h2 class="s-head">You're all <span class="grad-text">set!</span></h2>
+  <p class="done-msg" id="done-msg">Check your inbox for your photo strip! Thank you for celebrating with us. 🥂</p>
+  <button class="btn btn-primary" onclick="restart()" style="margin-top:8px">Take Another Strip!</button>
+</div>
+
+<canvas id="comp-canvas"></canvas>
+<button id="settings-btn" onclick="openSettings()">⚙ Setup</button>
+
+<!-- ══ SETTINGS ══ -->
+<div id="settings-panel">
+  <h2 class="s-title">Photo Booth <span class="grad-text">Setup</span></h2>
+  <div class="s-row"><label class="sl">Couple Names</label><input class="si" id="c-names" value="Emma & Lucas"></div>
+  <div class="s-row"><label class="sl">Wedding Date</label><input class="si" id="c-date" value="June 14, 2026"></div>
+  <div class="s-row"><label class="sl">Photos per Strip (1–4)</label><input class="si" id="c-count" type="number" value="3" min="1" max="4"></div>
+  <div class="s-row"><label class="sl">Countdown Seconds</label><input class="si" id="c-cd" type="number" value="3" min="1" max="10"></div>
+
+  <div class="divider" style="margin:6px 0"><div class="div-dot"></div></div>
+  <p class="sl">QR Code — Guest Email Form</p>
+  <div class="s-note">
+    <strong>Free 5-min setup:</strong><br>
+    1. Go to <a href="https://forms.google.com" target="_blank">Google Forms</a> → create a new form<br>
+    2. Add one question: "Your email address"<br>
+    3. Click Share → Copy link → paste below<br>
+    Guests scan with their phone, type email comfortably on their own screen!
+  </div>
+  <div class="s-row"><label class="sl">QR Code URL (Google Form link)</label><input class="si" id="c-qr" placeholder="https://forms.gle/yourformlink"></div>
+
+  <div class="divider" style="margin:6px 0"><div class="div-dot"></div></div>
+  <p class="sl">EmailJS — Direct Emailing</p>
+  <div class="s-note">
+    <strong>Free email setup:</strong><br>
+    1. Sign up at <a href="https://emailjs.com" target="_blank">emailjs.com</a><br>
+    2. Connect Gmail → create template with <code>{{to_email}}</code> + <code>{{photo_strip}}</code><br>
+    3. Paste your credentials below
+  </div>
+  <div class="s-row"><label class="sl">Service ID</label><input class="si" id="c-svc" placeholder="service_xxxxxxx"></div>
+  <div class="s-row"><label class="sl">Template ID</label><input class="si" id="c-tpl" placeholder="template_xxxxxxx"></div>
+  <div class="s-row"><label class="sl">Public Key</label><input class="si" id="c-key" placeholder="your_public_key"></div>
+
+  <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:10px">✓ Save Settings</button>
+  <button class="btn btn-outline" onclick="closeSettings()">✕ Close</button>
+</div>
+
+<script>
+// ── CONFIG ──
+let cfg = { names:"Emma & Lucas", date:"June 14, 2026", count:3, cd:3, qrUrl:"", svc:"", tpl:"", key:"" };
+
+// ── STATE ──
+let userEmail="", photos=[], stream=null, capturing=false, activeFilter="", stripURL="";
+
+// ── FILTERS ──
+const FILTERS = [
+  {id:"",       label:"Original", icon:"✨", bg:"linear-gradient(135deg,#c4b5fd,#2dd4bf)"},
+  {id:"noir",   label:"Noir",     icon:"⬛", bg:"#374151"},
+  {id:"vintage",label:"Vintage",  icon:"🌅", bg:"linear-gradient(135deg,#d97706,#92400e)"},
+  {id:"vivid",  label:"Vivid",    icon:"🌈", bg:"linear-gradient(135deg,#7c3aed,#ec4899)"},
+  {id:"cool",   label:"Cool",     icon:"❄️",  bg:"linear-gradient(135deg,#0e7490,#2dd4bf)"},
+  {id:"warm",   label:"Warm",     icon:"🌺", bg:"linear-gradient(135deg,#b45309,#d97706)"},
+  {id:"dreamy", label:"Dreamy",   icon:"🌙", bg:"linear-gradient(135deg,#6d28d9,#a78bfa)"},
+  {id:"neon",   label:"Neon",     icon:"⚡", bg:"linear-gradient(135deg,#7c3aed,#0d9488)"},
+  {id:"retro",  label:"Retro",    icon:"📼", bg:"linear-gradient(135deg,#92400e,#78350f)"},
+  {id:"pop",    label:"Pop",      icon:"🎨", bg:"linear-gradient(135deg,#ec4899,#7c3aed)"},
+];
+const FILTER_CSS = {
+  "":"","noir":"grayscale(1) contrast(1.15) brightness(0.95)",
+  "vintage":"sepia(0.65) contrast(1.1) brightness(1.08) saturate(0.85)",
+  "vivid":"saturate(2) contrast(1.15) brightness(1.05)",
+  "cool":"hue-rotate(25deg) saturate(1.3) brightness(1.05)",
+  "warm":"sepia(0.25) saturate(1.6) hue-rotate(-15deg) brightness(1.05)",
+  "dreamy":"brightness(1.15) saturate(0.75) contrast(0.88)",
+  "neon":"saturate(3.2) contrast(1.35) hue-rotate(260deg) brightness(0.92)",
+  "retro":"sepia(1) hue-rotate(295deg) saturate(1.9) contrast(1.12)",
+  "pop":"saturate(2.5) contrast(1.25) brightness(1.08) hue-rotate(10deg)",
+};
+
+// ── NAV ──
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+
+// ── EMAIL TABS ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(tab==='type')===(i===0)));
+  document.getElementById('pane-type').classList.toggle('active',tab==='type');
+  document.getElementById('pane-qr').classList.toggle('active',tab==='qr');
+}
+
+function proceedFromEmail() {
+  const v = document.getElementById('email-input').value.trim();
+  if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+    const el=document.getElementById('email-input');
+    el.style.borderColor='#ef4444';
+    setTimeout(()=>el.style.borderColor='',1500);
+    return;
+  }
+  userEmail=v;
+  document.getElementById('send-btn').textContent = v ? `✉ Send to ${v}` : '⬇ Download Photo Strip';
+  launchCamera();
+}
+function skipEmail() { userEmail=""; document.getElementById('send-btn').textContent='⬇ Download'; launchCamera(); }
+
+// ── CAMERA ──
+async function launchCamera() {
+  photos=[]; capturing=false; activeFilter="";
+  goTo('camera'); buildDots(); buildFilters(); updateBadge();
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false});
+    document.getElementById('video').srcObject=stream;
+  } catch { alert("Camera access needed! Please allow camera access in your browser."); }
+}
+function buildDots() {
+  const w=document.getElementById('cam-dots'); w.innerHTML='';
+  for(let i=0;i<cfg.count;i++){const d=document.createElement('div');d.className='dot';d.id='dot-'+i;w.appendChild(d);}
+}
+function buildFilters() {
+  const strip=document.getElementById('filter-strip'); strip.innerHTML='';
+  FILTERS.forEach(f=>{
+    const ch=document.createElement('div');
+    ch.className='fchip'+(f.id===activeFilter?' active':'');
+    ch.onclick=()=>applyFilter(f.id);
+    ch.innerHTML=`<div class="fthumb" style="background:${f.bg}">${f.icon}</div><span class="flabel">${f.label}</span>`;
+    strip.appendChild(ch);
+  });
+}
+function applyFilter(id) {
+  activeFilter=id;
+  const v=document.getElementById('video');
+  v.className=id?'f-'+id:'';
+  document.querySelectorAll('.fchip').forEach((c,i)=>c.classList.toggle('active',FILTERS[i].id===id));
+}
+function updateBadge() { document.getElementById('cam-badge').textContent=`Photo ${photos.length+1} of ${cfg.count}`; }
+
+function startCountdown() {
+  if(capturing)return;
+  capturing=true;
+  document.getElementById('shutter').disabled=true;
+  document.getElementById('cam-msg').textContent="Smile! 😄";
+  let n=cfg.cd; const el=document.getElementById('countdown');
+  const tick=()=>{
+    if(n>0){el.textContent=n;el.classList.add('show');n--;setTimeout(tick,1000);}
+    else{el.classList.remove('show');capturePhoto();}
+  };
+  tick();
+}
+
+function capturePhoto() {
+  const vid=document.getElementById('video');
+  const fl=document.getElementById('flash');
+  fl.classList.add('pop'); setTimeout(()=>fl.classList.remove('pop'),150);
+  const c=document.createElement('canvas');
+  c.width=vid.videoWidth||640; c.height=vid.videoHeight||480;
+  const ctx=c.getContext('2d');
+  const css=FILTER_CSS[activeFilter]||"";
+  if(css) ctx.filter=css;
+  ctx.save(); ctx.translate(c.width,0); ctx.scale(-1,1); ctx.drawImage(vid,0,0); ctx.restore();
+  photos.push(c.toDataURL('image/jpeg',0.88));
+  document.getElementById('dot-'+(photos.length-1)).classList.add('taken');
+  if(photos.length<cfg.count){
+    setTimeout(()=>{capturing=false;document.getElementById('shutter').disabled=false;updateBadge();document.getElementById('cam-msg').textContent=`${photos.length} down! Tap for next pose 🎉`;},700);
+  } else {
+    setTimeout(()=>{stopCamera();buildPreview();goTo('preview');},700);
+  }
+}
+function stopCamera() { if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;} }
+
+// ── STRIP ──
+function buildPreview() {
+  const w=document.getElementById('strip-imgs'); w.innerHTML='';
+  photos.forEach(src=>{const i=document.createElement('img');i.className='strip-img';i.src=src;w.appendChild(i);});
+  document.getElementById('s-names').textContent=cfg.names;
+  document.getElementById('s-date').textContent=cfg.date;
+  buildCanvas();
+}
+function buildCanvas() {
+  const W=640, pH=Math.round(W*0.625), gap=16, pad=22, fh=90;
+  const H=pad+cfg.count*(pH+gap)-gap+fh+pad;
+  const cv=document.getElementById('comp-canvas'); cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+  // Top bar
+  const tg=ctx.createLinearGradient(0,0,W,0); tg.addColorStop(0,'#7c3aed'); tg.addColorStop(1,'#0d9488');
+  ctx.fillStyle=tg; ctx.fillRect(0,0,W,6);
+  // Borders
+  ctx.strokeStyle='rgba(124,58,237,0.15)'; ctx.lineWidth=2; ctx.strokeRect(5,5,W-10,H-10);
+  ctx.strokeStyle='rgba(13,148,136,0.1)'; ctx.lineWidth=1; ctx.strokeRect(12,12,W-24,H-24);
+  const imgs=photos.map(src=>new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.src=src;}));
+  Promise.all(imgs).then(loaded=>{
+    loaded.forEach((img,i)=>{
+      const y=pad+i*(pH+gap);
+      ctx.save(); rr(ctx,pad,y,W-pad*2,pH,4); ctx.clip(); ctx.drawImage(img,pad,y,W-pad*2,pH); ctx.restore();
+      // Vignette
+      const vg=ctx.createRadialGradient(W/2,y+pH/2,pH*0.28,W/2,y+pH/2,pH*0.72);
+      vg.addColorStop(0,'transparent'); vg.addColorStop(1,'rgba(0,0,0,0.14)');
+      ctx.save(); rr(ctx,pad,y,W-pad*2,pH,4); ctx.clip(); ctx.fillStyle=vg; ctx.fillRect(pad,y,W-pad*2,pH); ctx.restore();
+    });
+    const fy=pad+cfg.count*(pH+gap)-gap+10;
+    // Divider line
+    const dg=ctx.createLinearGradient(W*0.15,0,W*0.85,0);
+    dg.addColorStop(0,'transparent'); dg.addColorStop(0.5,'rgba(124,58,237,0.4)'); dg.addColorStop(1,'transparent');
+    ctx.strokeStyle=dg; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(W*0.15,fy+6); ctx.lineTo(W*0.85,fy+6); ctx.stroke();
+    // Names
+    const ng=ctx.createLinearGradient(W*0.3,0,W*0.7,0);
+    ng.addColorStop(0,'#7c3aed'); ng.addColorStop(1,'#0d9488');
+    ctx.fillStyle=ng; ctx.font='italic 700 30px "Playfair Display",serif';
+    ctx.textAlign='center'; ctx.fillText(cfg.names,W/2,fy+40);
+    // Date
+    ctx.fillStyle='rgba(30,27,46,0.38)'; ctx.font='400 13px "DM Sans",sans-serif';
+    ctx.fillText(cfg.date.toUpperCase(),W/2,fy+60);
+    // Hearts
+    ctx.fillStyle='#2dd4bf'; ctx.font='13px serif'; ctx.fillText('♥  ♥  ♥',W/2,fy+76);
+    // Bottom bar
+    ctx.fillStyle=tg; ctx.fillRect(0,H-6,W,6);
+    stripURL=cv.toDataURL('image/jpeg',0.9);
+  });
+}
+function rr(ctx,x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+// ── SEND / DOWNLOAD ──
+function sendOrDownload() { userEmail ? sendEmail() : downloadStrip(); }
+function downloadStrip() {
+  const a=document.createElement('a');
+  a.href=stripURL; a.download=cfg.names.replace(/[^a-z0-9]/gi,'_')+'_photo_strip.jpg'; a.click();
+  document.getElementById('done-msg').textContent="Downloaded! 🎉 Thank you for celebrating with us. 🥂";
+  goTo('done');
+}
+async function sendEmail() {
+  if(!cfg.svc||!cfg.tpl||!cfg.key){alert("EmailJS not configured yet!\n\nTap ⚙ Setup (top left) to add your credentials.\n\nDownloading instead.");downloadStrip();return;}
+  goTo('sending');
+  try {
+    const res=await fetch('https://api.emailjs.com/api/v1.0/email/send',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({service_id:cfg.svc,template_id:cfg.tpl,user_id:cfg.key,
+        template_params:{to_email:userEmail,couple_names:cfg.names,wedding_date:cfg.date,photo_strip:stripURL.split(',')[1]}})
+    });
+    if(res.ok){
+      document.getElementById('done-msg').textContent=`Your strip is flying to ${userEmail}! ✨ Thank you for celebrating with us. 🥂`;
+      goTo('done');
+    } else throw new Error();
+  } catch { alert("Email failed — downloading instead."); downloadStrip(); }
+}
+function retake() { photos=[]; capturing=false; launchCamera(); }
+function restart() { photos=[]; capturing=false; stripURL=""; userEmail=""; document.getElementById('email-input').value=''; goTo('welcome'); }
+
+// ── SETTINGS ──
+function openSettings() { document.getElementById('settings-panel').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-panel').classList.remove('open'); }
+function saveSettings() {
+  cfg.names=document.getElementById('c-names').value.trim()||cfg.names;
+  cfg.date =document.getElementById('c-date').value.trim() ||cfg.date;
+  cfg.count=Math.min(4,Math.max(1,+document.getElementById('c-count').value||3));
+  cfg.cd   =Math.min(10,Math.max(1,+document.getElementById('c-cd').value||3));
+  cfg.qrUrl=document.getElementById('c-qr').value.trim();
+  cfg.svc  =document.getElementById('c-svc').value.trim();
+  cfg.tpl  =document.getElementById('c-tpl').value.trim();
+  cfg.key  =document.getElementById('c-key').value.trim();
+  // Update welcome
+  const init=cfg.names.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
+  document.getElementById('monogram').textContent=init;
+  document.getElementById('disp-names').textContent=cfg.names+'\u2019';
+  document.getElementById('disp-date').textContent=cfg.date;
+  // Update QR
+  const url=cfg.qrUrl||'https://forms.google.com';
+  document.getElementById('qr-img').src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=7c3aed&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
+  closeSettings();
+}
+
+// ── INIT ──
+document.getElementById('qr-img').src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=7c3aed&bgcolor=ffffff&data=https://forms.google.com';
+if('wakeLock'in navigator){const rw=()=>navigator.wakeLock.request('screen').catch(()=>{});rw();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')rw();});}
+</script>
+</body>
+</html>
