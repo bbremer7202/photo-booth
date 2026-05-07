@@ -315,6 +315,21 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
     </select>
   </div>
 
+  <!-- Manual Album ID fallback -->
+  <div class="s-row">
+    <label class="sl">Or Enter Album ID Manually</label>
+    <input class="si" id="c-album-id" placeholder="Paste your Album ID here">
+  </div>
+  <div class="s-note">
+    <strong>How to find your Album ID:</strong><br>
+    1. Go to <a href="https://photos.google.com" target="_blank">photos.google.com</a> on a computer<br>
+    2. Click your wedding album<br>
+    3. Copy the long ID from the URL:<br>
+    <code style="font-size:11px;word-break:break-all">photos.google.com/album/<strong>THIS_PART_HERE</strong></code><br>
+    4. Paste it in the field above
+  </div>
+  <div id="album-error" style="display:none;background:#fef2f2;border-left:3px solid #ef4444;border-radius:8px;padding:12px;font-size:13px;color:#dc2626;line-height:1.5;"></div>
+
   <button class="btn btn-green btn-sm" id="connect-btn" onclick="connectGoogle()" style="margin-top:4px">🔗 Connect to Google Photos</button>
 
   <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:6px">✓ Save Settings</button>
@@ -436,12 +451,32 @@ async function ensureToken(){
 }
 
 async function loadAlbums(){
+  const errBox = document.getElementById('album-error');
+  errBox.style.display = 'none';
   try {
     const res = await fetch('https://photoslibrary.googleapis.com/v1/albums?pageSize=50',{
       headers:{ Authorization: 'Bearer '+gToken }
     });
     const data = await res.json();
+
+    // Show API error if present
+    if(data.error){
+      errBox.style.display = 'block';
+      errBox.innerHTML = '<strong>Google API Error:</strong> ' + data.error.message +
+        '<br><small>Code: ' + data.error.code + ' — ' + data.error.status + '</small>' +
+        '<br><br>Use the manual Album ID field below instead.';
+      document.getElementById('album-row').style.display = 'none';
+      return;
+    }
+
     const albums = data.albums || [];
+    if(albums.length === 0){
+      errBox.style.display = 'block';
+      errBox.innerHTML = '<strong>No albums found</strong> in this Google account.<br>Please use the manual Album ID field below, or create an album first in Google Photos.';
+      document.getElementById('album-row').style.display = 'none';
+      return;
+    }
+
     const sel = document.getElementById('album-select');
     sel.innerHTML = '<option value="">— Select your wedding album —</option>';
     albums.forEach(a=>{
@@ -453,6 +488,9 @@ async function loadAlbums(){
     });
     document.getElementById('album-row').style.display = 'flex';
   } catch(e){
+    errBox.style.display = 'block';
+    errBox.innerHTML = '<strong>Could not load albums:</strong> ' + e.message +
+      '<br><br>Use the manual Album ID field below instead.';
     console.error('Could not load albums:', e);
   }
 }
@@ -718,6 +756,7 @@ function openSettings(){
   document.getElementById('c-cd').value=cfg.cd;
   document.getElementById('c-client-id').value=cfg.clientId;
   document.getElementById('c-gp-url').value=cfg.gpUrl;
+  document.getElementById('c-album-id').value=cfg.albumId;
   // Show album row if already connected
   if(gToken && Date.now()<gTokenExpiry){
     document.getElementById('album-row').style.display='flex';
@@ -734,7 +773,9 @@ function saveSettings(){
   cfg.cd       = Math.min(10,Math.max(1,+document.getElementById('c-cd').value||3));
   cfg.clientId = document.getElementById('c-client-id').value.trim();
   cfg.gpUrl    = document.getElementById('c-gp-url').value.trim();
-  cfg.albumId  = document.getElementById('album-select').value || cfg.albumId;
+  const manualAlbumId = document.getElementById('c-album-id').value.trim();
+  const dropdownAlbumId = document.getElementById('album-select').value;
+  cfg.albumId = dropdownAlbumId || manualAlbumId || cfg.albumId;
 
   // Persist
   localStorage.setItem('cfg_names',    cfg.names);
