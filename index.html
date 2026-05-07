@@ -580,7 +580,7 @@ function buildCanvas(){ return new Promise(resolveCanvas=>{
     ctx.fillStyle=tg;ctx.fillRect(0,H-6,W,6);
     stripURL=cv.toDataURL('image/jpeg',0.9); resolveCanvas();
   });
-}
+}); }
 
 function rr(ctx,x,y,w,h,r){
   ctx.beginPath();
