@@ -244,6 +244,7 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
     <p class="qr-label">📸 <strong>Scan to see ALL wedding photos!</strong><br>Find your strip & share with family and friends</p>
   </div>
   <button class="btn btn-primary" onclick="restart()" style="margin-top:4px">Take Another Strip! 🎊</button>
+  <p id="auto-reset-msg" style="font-size:12px;color:var(--text-soft);margin-top:4px;"></p>
 </div>
 
 <canvas id="comp-canvas"></canvas>
@@ -322,6 +323,7 @@ let cfg = {
 
 // ── STATE ──
 let photos=[], stream=null, capturing=false, activeFilter="", stripURL="";
+let autoResetTimer=null;
 let gToken=null, gTokenExpiry=0, gTokenClient=null;
 
 // ── FILTERS ──
@@ -453,6 +455,7 @@ async function uploadToDrive(imageDataURL){
 // ── CAMERA ──
 async function launchCamera(){
   photos=[]; capturing=false; activeFilter="";
+  document.getElementById("shutter").disabled=false;
   goTo('camera'); buildDots(); buildFilters(); updateBadge();
   try {
     stream = await navigator.mediaDevices.getUserMedia({
@@ -614,6 +617,23 @@ async function saveAndUpload(){
     document.getElementById('done-msg').textContent='Saved to this device! Connect Google Drive in ⚙ Setup for automatic uploading.';
   }
   goTo('done');
+  startAutoReset();
+}
+
+function startAutoReset(){
+  if(autoResetTimer) clearInterval(autoResetTimer);
+  let secs = 60;
+  const msg = document.getElementById("auto-reset-msg");
+  if(msg) msg.textContent = "Returning to start in " + secs + "s…";
+  autoResetTimer = setInterval(()=>{
+    secs--;
+    if(msg) msg.textContent = "Returning to start in " + secs + "s…";
+    if(secs <= 0){
+      clearInterval(autoResetTimer);
+      autoResetTimer = null;
+      restart();
+    }
+  }, 1000);
 }
 
 function triggerDownload(){
@@ -624,7 +644,7 @@ function triggerDownload(){
 }
 
 function retake(){photos=[];capturing=false;launchCamera();}
-function restart(){photos=[];capturing=false;stripURL="";goTo('welcome');}
+function restart(){if(autoResetTimer){clearInterval(autoResetTimer);autoResetTimer=null;}photos=[];capturing=false;stripURL="";document.getElementById("shutter").disabled=false;goTo('welcome');}
 
 // ── SETTINGS ──
 function openSettings(){
