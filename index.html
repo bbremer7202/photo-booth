@@ -525,7 +525,7 @@ function capturePhoto(){
       document.getElementById('cam-msg').textContent=`${photos.length} done! Tap for next pose 🎉`;
     },700);
   } else {
-    setTimeout(()=>{stopCamera();buildPreview();goTo('preview');},700);
+    setTimeout(async ()=>{ stopCamera(); await buildPreview(); goTo('preview'); },700);
   }
 }
 
@@ -534,17 +534,17 @@ function stopCamera(){
 }
 
 // ── STRIP ──
-function buildPreview(){
+async function buildPreview(){
   const w=document.getElementById('strip-imgs'); w.innerHTML='';
   photos.forEach(src=>{
     const i=document.createElement('img');i.className='strip-img';i.src=src;w.appendChild(i);
   });
-  document.getElementById('s-names').textContent=cfg.names;
+  document.getElementById('s-names').textContent=cfg.names; await buildCanvas();
   document.getElementById('s-date').textContent=cfg.date;
-  buildCanvas();
+
 }
 
-function buildCanvas(){
+function buildCanvas(){ return new Promise(resolveCanvas=>{
   const W=640,pH=Math.round(W*0.625),gap=16,pad=22,fh=90;
   const H=pad+cfg.count*(pH+gap)-gap+fh+pad;
   const cv=document.getElementById('comp-canvas');cv.width=W;cv.height=H;
@@ -578,7 +578,7 @@ function buildCanvas(){
     ctx.fillText(cfg.date.toUpperCase(),W/2,fy+60);
     ctx.fillStyle='#2dd4bf';ctx.font='13px serif';ctx.fillText('♥  ♥  ♥',W/2,fy+76);
     ctx.fillStyle=tg;ctx.fillRect(0,H-6,W,6);
-    stripURL=cv.toDataURL('image/jpeg',0.9);
+    stripURL=cv.toDataURL('image/jpeg',0.9); resolveCanvas();
   });
 }
 
@@ -593,7 +593,7 @@ function rr(ctx,x,y,w,h,r){
 // ── SAVE & UPLOAD ──
 async function saveAndUpload(){
   goTo('uploading');
-  await new Promise(r=>setTimeout(r,400));
+  
 
   const connected = gToken && Date.now() < gTokenExpiry && cfg.folderId;
 
