@@ -517,7 +517,8 @@ function capturePhoto(){
   const ctx=c.getContext('2d');
   const css=FCSS[activeFilter]||"";
   if(css)ctx.filter=css;
-  ctx.save();ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(vid,0,0);ctx.restore();
+  // Draw without mirror flip so saved photo is not reversed
+  ctx.drawImage(vid,0,0);
   photos.push(c.toDataURL('image/jpeg',0.88));
   document.getElementById('dot-'+(photos.length-1)).classList.add('taken');
   if(photos.length<cfg.count){
