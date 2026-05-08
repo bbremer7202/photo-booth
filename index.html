@@ -46,18 +46,18 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 
 /* WELCOME */
 .monogram-ring {
-  width:110px;height:110px;border-radius:50%;background:var(--gradient);
+  width:140px;height:140px;border-radius:50%;background:var(--gradient);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 0 10px rgba(124,58,237,0.1),0 12px 40px rgba(124,58,237,0.25);
+  box-shadow:0 0 0 14px rgba(124,58,237,0.1),0 16px 50px rgba(124,58,237,0.3);
   position:relative;animation:float 3.2s ease-in-out infinite;
 }
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .monogram-ring::after{content:'';position:absolute;inset:5px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);}
-.monogram-text{font-family:var(--font-d);font-size:34px;font-style:italic;color:white;font-weight:700;letter-spacing:-1px;z-index:1;}
-.welcome-title{font-family:var(--font-d);font-size:clamp(26px,7vw,44px);font-weight:400;text-align:center;line-height:1.2;}
-.welcome-date{font-size:12px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-soft);}
-.welcome-desc{font-size:clamp(13px,3.2vw,15px);color:var(--text-soft);text-align:center;line-height:1.7;max-width:270px;font-weight:300;}
-.conn-badge{display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:50px;font-size:12px;font-weight:500;background:rgba(255,255,255,0.8);border:1px solid var(--border);}
+.monogram-text{font-family:var(--font-d);font-size:44px;font-style:italic;color:white;font-weight:700;letter-spacing:-1px;z-index:1;}
+.welcome-title{font-family:var(--font-d);font-size:clamp(18px,4.5vw,26px);font-weight:400;text-align:center;line-height:1.2;color:var(--text-soft);letter-spacing:0.08em;text-transform:uppercase;}
+.welcome-wedding{font-family:var(--font-d);font-size:clamp(32px,9vw,58px);font-weight:700;text-align:center;line-height:1.1;margin-bottom:2px;}
+.welcome-desc{font-size:clamp(17px,4.5vw,22px);color:var(--text);text-align:center;line-height:1.6;max-width:320px;font-weight:400;}
+.conn-badge{display:flex;align-items:center;gap:7px;padding:6px 14px;border-radius:50px;font-size:11px;font-weight:500;background:rgba(255,255,255,0.7);border:1px solid rgba(245,158,11,0.4);position:absolute;bottom:24px;left:50%;transform:translateX(-50%);white-space:nowrap;}
 .conn-dot{width:8px;height:8px;border-radius:50%;}
 .conn-dot.ok{background:#22c55e;}
 .conn-dot.no{background:#f59e0b;}
@@ -174,15 +174,16 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 <!-- WELCOME -->
 <div id="screen-welcome" class="screen active">
   <div class="monogram-ring"><span class="monogram-text" id="monogram">K&T</span></div>
-  <h1 class="welcome-title">Welcome to<br><span class="grad-text" id="disp-names">Kamryn & Ted's</span></h1>
-  <p class="welcome-date" id="disp-date">October 3, 2026</p>
-  <div class="conn-badge">
-    <div class="conn-dot" id="conn-dot" class="no"></div>
-    <span id="conn-text">Not connected to Google Drive</span>
+  <p class="welcome-title">Welcome to</p>
+  <h1 class="welcome-wedding"><span class="grad-text" id="disp-names">Kamryn &amp; Ted's Wedding</span></h1>
+  <p style="font-size:13px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-soft);" id="disp-date">October 3, 2026</p>
+  <div class="divider" style="margin:12px 0"><div class="div-dot"></div></div>
+  <p class="welcome-desc">Strike a pose and take home a gorgeous photo strip from our special day! 🎉</p>
+  <button class="btn btn-primary" onclick="launchCamera()" style="margin-top:16px;font-size:18px;padding:18px 52px;">📸 Start the Booth!</button>
+  <div class="conn-badge" id="conn-badge">
+    <div class="conn-dot no" id="conn-dot"></div>
+    <span id="conn-text">⚠ Not connected to Google Drive</span>
   </div>
-  <div class="divider"><div class="div-dot"></div></div>
-  <p class="welcome-desc">Strike a pose and take home a gorgeous photo strip! 🎉</p>
-  <button class="btn btn-primary" onclick="launchCamera()" style="margin-top:8px">📸 Start the Booth!</button>
 </div>
 
 <!-- CAMERA -->
@@ -435,9 +436,13 @@ async function ensureToken(){
 }
 
 function updateConnectionUI(connected){
+  // Welcome badge — hide when connected, show warning when not
+  const badge = document.getElementById('conn-badge');
+  if(badge) badge.style.display = connected ? 'none' : 'flex';
   document.getElementById('conn-dot').className = 'conn-dot ' + (connected?'ok':'no');
   document.getElementById('conn-text').textContent = connected
-    ? '✓ Connected to Google Drive' : 'Not connected to Google Drive';
+    ? '✓ Connected to Google Drive' : '⚠ Not connected to Google Drive';
+  // Settings status
   document.getElementById('s-dot').className = 'cs-dot ' + (connected?'on':'off');
   document.getElementById('s-status-text').textContent = connected ? 'Connected!' : 'Not connected';
   document.getElementById('s-status-sub').textContent = connected
@@ -762,7 +767,7 @@ function saveSettings(){
 
   const init=cfg.names.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
   document.getElementById('monogram').textContent=init;
-  document.getElementById('disp-names').textContent=cfg.names+"'s";
+  document.getElementById('disp-names').textContent=cfg.names+"'s Wedding";
   document.getElementById('disp-date').textContent=cfg.date;
   updateQR();
   closeSettings();
@@ -776,13 +781,19 @@ function updateQR(){
 
 // ── INIT ──
 updateQR();
-document.getElementById('disp-names').textContent = cfg.names + "'s";
+document.getElementById('disp-names').textContent = cfg.names + "'s Wedding";
 document.getElementById('disp-date').textContent = cfg.date;
 const _init = cfg.names.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
 document.getElementById('monogram').textContent = _init;
 document.getElementById('c-client-id').value = cfg.clientId;
 document.getElementById('c-folder-id').value = cfg.folderId;
 document.getElementById('c-folder-url').value = cfg.folderUrl;
+
+// Hide connection badge on load if already connected
+if(typeof gToken !== 'undefined' && gToken && Date.now() < gTokenExpiry){
+  const badge = document.getElementById('conn-badge');
+  if(badge) badge.style.display = 'none';
+}
 
 if('wakeLock'in navigator){
   const rw=()=>navigator.wakeLock.request('screen').catch(()=>{});
