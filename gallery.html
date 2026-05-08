@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kamryn & Ted's Wedding Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════
+   CONFIGURE THESE TWO VALUES
+   ═══════════════════════════ */
+:root {
+  --cloud-name: "your-cloud-name";  /* ← your Cloudinary cloud name */
+  --photo-tag:  "kamryn-ted-2026";  /* ← must match tag in photo booth */
+
+  --purple:      #7c3aed;
+  --teal:        #0d9488;
+  --teal-light:  #2dd4bf;
+  --bg:          #faf7ff;
+  --text:        #1e1b2e;
+  --text-soft:   rgba(30,27,46,0.5);
+  --gradient:    linear-gradient(135deg, #7c3aed 0%, #0d9488 100%);
+  --font-d: 'Playfair Display', serif;
+  --font-b: 'DM Sans', sans-serif;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background:var(--bg); font-family:var(--font-b);
+  color:var(--text); min-height:100vh;
+}
+body::before {
+  content:''; position:fixed; width:500px; height:500px;
+  border-radius:50%; background:rgba(124,58,237,0.08);
+  top:-150px; left:-150px; filter:blur(80px); pointer-events:none;
+}
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:48px 24px 32px;
+  position:relative;
+}
+.header-monogram {
+  width:72px; height:72px; border-radius:50%;
+  background:var(--gradient);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:var(--font-d); font-size:26px; font-style:italic;
+  color:white; font-weight:700; letter-spacing:-1px;
+  box-shadow:0 0 0 8px rgba(124,58,237,0.1), 0 8px 30px rgba(124,58,237,0.25);
+  margin-bottom:16px;
+}
+.header-eyebrow {
+  font-size:11px; font-weight:500; letter-spacing:0.2em;
+  text-transform:uppercase; color:var(--text-soft); margin-bottom:6px;
+}
+h1 {
+  font-family:var(--font-d);
+  font-size:clamp(28px,7vw,48px);
+  font-weight:700; line-height:1.1;
+  margin-bottom:6px;
+}
+.grad { background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-style:italic; }
+.header-date {
+  font-size:12px; font-weight:500; letter-spacing:0.2em;
+  text-transform:uppercase; color:var(--text-soft); margin-bottom:20px;
+}
+.divider {
+  display:flex; align-items:center; gap:10px;
+  max-width:320px; margin:0 auto 16px;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--gradient); opacity:0.3; }
+.div-dot { width:6px; height:6px; border-radius:50%; background:var(--gradient); }
+
+/* STATUS BAR */
+.status-bar {
+  text-align:center; padding:0 24px 12px;
+  font-size:13px; color:var(--text-soft);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.status-dot {
+  width:8px; height:8px; border-radius:50%; background:var(--teal-light);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* GRID */
+.gallery-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:20px;
+  padding:16px 20px 60px;
+  max-width:1200px;
+  margin:0 auto;
+}
+
+.photo-card {
+  background:white;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(124,58,237,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  border:1px solid rgba(124,58,237,0.08);
+  transition:transform 0.2s, box-shadow 0.2s;
+  cursor:pointer;
+  animation:fadeUp 0.5s ease both;
+}
+.photo-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(124,58,237,0.15);
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+.photo-card img {
+  width:100%; height:auto; display:block;
+}
+.photo-card-footer {
+  padding:10px 14px;
+  font-size:11px; color:var(--text-soft);
+  letter-spacing:0.05em;
+  border-top:1px solid rgba(124,58,237,0.06);
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align:center; padding:80px 24px;
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+}
+.empty-icon {
+  width:80px; height:80px; border-radius:50%;
+  background:var(--gradient); font-size:36px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 30px rgba(124,58,237,0.25);
+}
+.empty-title { font-family:var(--font-d); font-size:24px; font-weight:400; }
+.empty-sub   { font-size:15px; color:var(--text-soft); max-width:260px; line-height:1.6; }
+
+/* LOADING */
+.loading-wrap {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:80px 24px; gap:16px;
+}
+.spinner {
+  width:44px; height:44px; border-radius:50%;
+  border:3px solid rgba(124,58,237,0.15);
+  border-top-color:var(--purple); border-right-color:var(--teal);
+  animation:spin 0.9s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* LIGHTBOX */
+#lightbox {
+  display:none; position:fixed; inset:0; z-index:100;
+  background:rgba(14,14,26,0.92); backdrop-filter:blur(8px);
+  align-items:center; justify-content:center; padding:20px;
+}
+#lightbox.open { display:flex; }
+#lightbox img {
+  max-width:100%; max-height:90vh;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+#lightbox-close {
+  position:absolute; top:20px; right:20px;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,0.15); border:none;
+  color:white; font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+#lightbox-download {
+  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--gradient); color:white; border:none;
+  padding:12px 32px; border-radius:50px; font-family:var(--font-b);
+  font-size:15px; font-weight:500; cursor:pointer;
+  box-shadow:0 6px 20px rgba(124,58,237,0.4);
+}
+
+/* FOOTER */
+footer {
+  text-align:center; padding:24px;
+  font-size:12px; color:var(--text-soft);
+  border-top:1px solid rgba(124,58,237,0.08);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-monogram" id="hdr-monogram">K&T</div>
+  <p class="header-eyebrow">Welcome to the</p>
+  <h1><span class="grad" id="hdr-title">Kamryn & Ted's Wedding</span></h1>
+  <p class="header-date" id="hdr-date">October 3, 2026</p>
+  <div class="divider"><div class="div-dot"></div></div>
+  <p style="font-size:15px;color:var(--text-soft);max-width:300px;margin:0 auto;">All your photo booth strips in one place — no login needed! 📸</p>
+</header>
+
+<div class="status-bar" id="status-bar">
+  <div class="status-dot"></div>
+  <span id="status-text">Loading photos…</span>
+</div>
+
+<div id="main-content">
+  <div class="loading-wrap">
+    <div class="spinner"></div>
+    <p style="font-size:14px;color:var(--text-soft);">Fetching your wedding photos…</p>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+  <button id="lightbox-download" onclick="downloadCurrent()">⬇ Save This Photo</button>
+</div>
+
+<footer>
+  Made with 💜 for Kamryn & Ted's Wedding · Photos refresh automatically
+</footer>
+
+<script>
+// ════════════════════════════════════
+// CONFIGURE THESE — match your booth
+// ════════════════════════════════════
+const CLOUD_NAME   = 'your-cloud-name';   // ← replace with your Cloudinary cloud name
+const PHOTO_TAG    = 'kamryn-ted-2026';   // ← must match the tag in the photo booth Setup
+const COUPLE_NAMES = 'Kamryn & Ted';
+const WEDDING_DATE = 'October 3, 2026';
+// ════════════════════════════════════
+
+let currentImageUrl = '';
+let photoCount = 0;
+
+// Update header
+document.getElementById('hdr-title').textContent = COUPLE_NAMES + "'s Wedding";
+document.getElementById('hdr-date').textContent  = WEDDING_DATE;
+const initials = COUPLE_NAMES.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
+document.getElementById('hdr-monogram').textContent = initials;
+
+async function loadPhotos(){
+  try {
+    const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${PHOTO_TAG}.json`;
+    const res = await fetch(url);
+
+    if(!res.ok){
+      if(res.status === 404){
+        showEmpty();
+        document.getElementById('status-text').textContent = 'No photos yet — be the first to take a strip!';
+      } else {
+        showError('Could not load photos (Error ' + res.status + '). The gallery may not be enabled yet.');
+      }
+      return;
+    }
+
+    const data = await res.json();
+    const resources = data.resources || [];
+    photoCount = resources.length;
+
+    if(resources.length === 0){
+      showEmpty();
+      document.getElementById('status-text').textContent = 'No photos yet — be the first!';
+      return;
+    }
+
+    // Sort newest first
+    resources.sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
+
+    showGrid(resources);
+    document.getElementById('status-text').textContent =
+      `${resources.length} photo strip${resources.length!==1?'s':''} · Auto-refreshes every 30 seconds`;
+
+  } catch(e) {
+    showError('Could not connect to photo gallery. Please check your internet connection and try again.');
+  }
+}
+
+function showGrid(resources){
+  const grid = document.createElement('div');
+  grid.className = 'gallery-grid';
+
+  resources.forEach((img, idx) => {
+    const publicId = img.public_id;
+    // Use Cloudinary URL with quality/format auto and reasonable width
+    const imgUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto,w_600/${publicId}`;
+    const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto/${publicId}`;
+
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    card.style.animationDelay = (idx * 0.06) + 's';
+    card.innerHTML = `
+      <img src="${imgUrl}" alt="Wedding photo strip" loading="lazy">
+      <div class="photo-card-footer">📸 Wedding Strip #${resources.length - idx}</div>
+    `;
+    card.onclick = () => openLightbox(fullUrl);
+    grid.appendChild(card);
+  });
+
+  document.getElementById('main-content').innerHTML = '';
+  document.getElementById('main-content').appendChild(grid);
+}
+
+function showEmpty(){
+  document.getElementById('main-content').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">📸</div>
+      <h2 class="empty-title">No photos yet!</h2>
+      <p class="empty-sub">Head to the photo booth and be the first to take a strip. Photos appear here instantly!</p>
+    </div>`;
+}
+
+function showError(msg){
+  document.getElementById('main-content').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">⚠️</div>
+      <h2 class="empty-title">Gallery not ready</h2>
+      <p class="empty-sub">${msg}</p>
+      <p style="font-size:12px;color:var(--text-soft);margin-top:8px;">Make sure "Disable list resource type" is unchecked in Cloudinary Settings → Security</p>
+    </div>`;
+  document.getElementById('status-text').textContent = 'Gallery unavailable';
+}
+
+function openLightbox(url){
+  currentImageUrl = url;
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+}
+
+function downloadCurrent(){
+  const a = document.createElement('a');
+  a.href = currentImageUrl;
+  a.download = 'WeddingPhotoStrip.jpg';
+  a.target = '_blank';
+  a.click();
+}
+
+// Close lightbox on background tap
+document.getElementById('lightbox').addEventListener('click', e => {
+  if(e.target === document.getElementById('lightbox')) closeLightbox();
+});
+
+// Load photos and auto-refresh every 30 seconds
+loadPhotos();
+setInterval(loadPhotos, 30000);
+</script>
+</body>
+</html>
