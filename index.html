@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Kamryn & Ted's Photo Booth</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root {
   --purple:       #7c3aed;
@@ -28,23 +27,26 @@ body {
 body::before, body::after {
   content:''; position:fixed; border-radius:50%; pointer-events:none; z-index:0; filter:blur(70px);
 }
-body::before { width:450px;height:450px;background:rgba(124,58,237,0.1);top:-120px;left:-120px; }
-body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:-90px;right:-90px; }
+body::before { width:500px;height:500px;background:rgba(124,58,237,0.1);top:-130px;left:-130px; }
+body::after  { width:420px;height:420px;background:rgba(13,148,136,0.09);bottom:-100px;right:-100px; }
+
 .screen {
   position:absolute; inset:0; display:flex; flex-direction:column;
   align-items:center; justify-content:center; padding:28px 24px;
   opacity:0; pointer-events:none; transition:opacity 0.45s; z-index:1; gap:10px;
 }
 .screen.active { opacity:1; pointer-events:all; }
-.divider { display:flex;align-items:center;gap:10px;width:100%;max-width:320px;margin:4px 0; }
+
+.divider { display:flex;align-items:center;gap:10px;width:100%;max-width:360px;margin:4px 0; }
 .divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--gradient);opacity:0.3; }
 .div-dot { width:6px;height:6px;border-radius:50%;background:var(--gradient); }
+
 .grad-text {
   background:var(--gradient);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic;
 }
 
-/* WELCOME */
+/* ── WELCOME ── */
 .monogram-ring {
   width:140px;height:140px;border-radius:50%;background:var(--gradient);
   display:flex;align-items:center;justify-content:center;
@@ -54,24 +56,30 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .monogram-ring::after{content:'';position:absolute;inset:5px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);}
 .monogram-text{font-family:var(--font-d);font-size:44px;font-style:italic;color:white;font-weight:700;letter-spacing:-1px;z-index:1;}
-.welcome-title{font-family:var(--font-d);font-size:clamp(18px,4.5vw,26px);font-weight:400;text-align:center;line-height:1.2;color:var(--text-soft);letter-spacing:0.08em;text-transform:uppercase;}
-.welcome-wedding{font-family:var(--font-d);font-size:clamp(32px,9vw,58px);font-weight:700;text-align:center;line-height:1.1;margin-bottom:2px;}
-.welcome-desc{font-size:clamp(17px,4.5vw,22px);color:var(--text);text-align:center;line-height:1.6;max-width:320px;font-weight:400;}
-.conn-badge{display:flex;align-items:center;gap:7px;padding:6px 14px;border-radius:50px;font-size:11px;font-weight:500;background:rgba(255,255,255,0.7);border:1px solid rgba(245,158,11,0.4);position:absolute;bottom:24px;left:50%;transform:translateX(-50%);white-space:nowrap;}
-.conn-dot{width:8px;height:8px;border-radius:50%;}
+.welcome-sub{font-size:clamp(13px,3.5vw,16px);font-weight:500;text-align:center;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-soft);}
+.welcome-title{font-family:var(--font-d);font-size:clamp(34px,9vw,60px);font-weight:700;text-align:center;line-height:1.1;}
+.welcome-date{font-size:13px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-soft);}
+.welcome-desc{font-size:clamp(17px,4.5vw,22px);color:var(--text);text-align:center;line-height:1.6;max-width:340px;font-weight:400;}
+.conn-badge{
+  display:flex;align-items:center;gap:7px;padding:6px 16px;
+  border-radius:50px;font-size:11px;font-weight:500;
+  background:rgba(255,255,255,0.7);border:1px solid rgba(245,158,11,0.4);
+  position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;color:rgba(30,27,46,0.65);
+}
+.conn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .conn-dot.ok{background:#22c55e;}
 .conn-dot.no{background:#f59e0b;}
 
-/* BUTTONS */
-.btn{width:100%;max-width:300px;padding:14px 40px;border-radius:50px;font-family:var(--font-b);font-size:15px;font-weight:500;cursor:pointer;border:none;text-align:center;transition:transform 0.15s;}
+/* ── BUTTONS ── */
+.btn{width:100%;max-width:320px;padding:14px 40px;border-radius:50px;font-family:var(--font-b);font-size:15px;font-weight:500;cursor:pointer;border:none;text-align:center;transition:transform 0.15s,box-shadow 0.15s;}
 .btn:active{transform:scale(0.96);}
 .btn-primary{background:var(--gradient);color:white;box-shadow:0 6px 24px rgba(124,58,237,0.35);}
 .btn-outline{background:transparent;color:var(--purple);border:1.5px solid rgba(124,58,237,0.4);}
-.btn-green{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;box-shadow:0 6px 24px rgba(22,163,74,0.3);}
 .s-head{font-family:var(--font-d);font-size:clamp(22px,5.5vw,34px);font-weight:400;text-align:center;}
 .s-sub{font-size:clamp(13px,3vw,15px);color:var(--text-soft);text-align:center;max-width:270px;line-height:1.6;font-weight:300;}
 
-/* CAMERA */
+/* ── CAMERA ── */
 #screen-camera{padding:0;}
 #screen-camera.active{display:flex;}
 .cam-wrap{position:relative;width:100%;height:100vh;background:#0d0d1a;overflow:hidden;display:flex;align-items:center;justify-content:center;}
@@ -85,7 +93,7 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 #video.f-neon   {filter:saturate(3.2) contrast(1.35) hue-rotate(260deg) brightness(0.92);}
 #video.f-retro  {filter:sepia(1) hue-rotate(295deg) saturate(1.9) contrast(1.12);}
 #video.f-pop    {filter:saturate(2.5) contrast(1.25) brightness(1.08) hue-rotate(10deg);}
-.cam-grad-t{position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(to bottom,rgba(13,13,26,0.75),transparent);pointer-events:none;z-index:5;}
+.cam-grad-t{position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(to bottom,rgba(13,13,26,0.75),transparent);pointer-events:none;z-index:5;}
 .cam-grad-b{position:absolute;bottom:0;left:0;right:0;height:260px;background:linear-gradient(to top,rgba(13,13,26,0.95),transparent);pointer-events:none;z-index:5;}
 .cam-frame{position:absolute;inset:14px;pointer-events:none;z-index:6;}
 .fc{position:absolute;width:34px;height:34px;border-style:solid;}
@@ -111,11 +119,11 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 .filter-strip{display:flex;gap:10px;padding:2px 18px 6px;overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .filter-strip::-webkit-scrollbar{display:none;}
 .fchip{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;padding:2px;}
-.fthumb{width:54px;height:54px;border-radius:11px;overflow:hidden;border:2.5px solid transparent;transition:border-color 0.2s,box-shadow 0.2s;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.fthumb{width:54px;height:54px;border-radius:11px;border:2.5px solid transparent;transition:border-color 0.2s,box-shadow 0.2s;display:flex;align-items:center;justify-content:center;font-size:22px;}
 .fchip.active .fthumb{border-color:var(--teal-light);box-shadow:0 0 0 2px rgba(45,212,191,0.4);}
 .flabel{font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;}
 
-/* PREVIEW */
+/* ── PREVIEW ── */
 .strip-card{background:white;border-radius:4px;padding:10px 10px 6px;box-shadow:0 16px 60px rgba(124,58,237,0.15),0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;max-width:215px;position:relative;border:2px solid rgba(124,58,237,0.1);}
 .strip-card::before{content:'';position:absolute;inset:5px;border:1px solid rgba(124,58,237,0.07);border-radius:2px;pointer-events:none;}
 .strip-imgs{display:flex;flex-direction:column;gap:5px;}
@@ -126,11 +134,11 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 .strip-hearts{font-size:9px;color:var(--teal);margin-top:2px;letter-spacing:4px;}
 .action-col{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;}
 
-/* UPLOADING */
+/* ── UPLOADING ── */
 .upload-spinner{width:52px;height:52px;border-radius:50%;border:3px solid rgba(124,58,237,0.15);border-top-color:var(--purple);border-right-color:var(--teal);animation:spin 0.9s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* DONE */
+/* ── DONE ── */
 .done-ring{width:86px;height:86px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 0 0 10px rgba(124,58,237,0.1),0 10px 40px rgba(124,58,237,0.3);animation:popIn 0.55s cubic-bezier(0.34,1.56,0.64,1);}
 @keyframes popIn{from{transform:scale(0.2);opacity:0}to{transform:scale(1);opacity:1}}
 .done-msg{font-size:clamp(13px,3vw,15px);color:var(--text-soft);text-align:center;max-width:270px;line-height:1.7;}
@@ -145,8 +153,8 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 .qr-label{font-size:13px;color:var(--text-soft);text-align:center;line-height:1.55;max-width:220px;}
 .qr-label strong{color:var(--purple);font-weight:500;}
 
-/* SETTINGS */
-#settings-btn{position:fixed;bottom:20px;right:20px;z-index:100;background:rgba(255,255,255,0.4);border:1px solid rgba(124,58,237,0.15);border-radius:10px;padding:8px 14px;font-size:12px;color:rgba(30,27,46,0.4);cursor:pointer;font-family:var(--font-b);font-weight:500;letter-spacing:0.06em;backdrop-filter:blur(4px);opacity:0.5;}
+/* ── SETTINGS ── */
+#settings-btn{position:fixed;bottom:20px;right:20px;z-index:100;background:rgba(255,255,255,0.4);border:1px solid rgba(124,58,237,0.15);border-radius:10px;padding:10px 16px;font-size:16px;color:rgba(30,27,46,0.4);cursor:pointer;font-family:var(--font-b);font-weight:500;opacity:0.5;backdrop-filter:blur(4px);}
 #settings-panel{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;padding:52px 24px 40px;overflow-y:auto;gap:14px;}
 #settings-panel.open{display:flex;}
 .s-title{font-family:var(--font-d);font-size:28px;font-weight:400;margin-bottom:4px;}
@@ -164,9 +172,11 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 .cs-text{font-size:14px;color:var(--text);}
 .cs-text small{display:block;font-size:11px;color:var(--text-soft);margin-top:1px;}
 
-#comp-canvas{display:none;}
-.pin-key{padding:16px;border-radius:14px;font-family:var(--font-d);font-size:22px;font-weight:700;border:none;background:white;color:var(--text);cursor:pointer;box-shadow:0 2px 8px rgba(124,58,237,0.1);border:1.5px solid var(--border);transition:transform 0.1s,background 0.1s;}
+/* ── PIN ── */
+.pin-key{padding:16px;border-radius:14px;font-family:var(--font-d);font-size:22px;font-weight:700;border:1.5px solid var(--border);background:white;color:var(--text);cursor:pointer;box-shadow:0 2px 8px rgba(124,58,237,0.1);transition:transform 0.1s,background 0.1s;}
 .pin-key:active{transform:scale(0.93);background:var(--gradient);color:white;}
+
+#comp-canvas{display:none;}
 </style>
 </head>
 <body>
@@ -174,15 +184,15 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 <!-- WELCOME -->
 <div id="screen-welcome" class="screen active">
   <div class="monogram-ring"><span class="monogram-text" id="monogram">K&T</span></div>
-  <p class="welcome-title">Welcome to</p>
-  <h1 class="welcome-wedding"><span class="grad-text" id="disp-names">Kamryn &amp; Ted's Wedding</span></h1>
-  <p style="font-size:13px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-soft);" id="disp-date">October 3, 2026</p>
+  <p class="welcome-sub">Welcome to</p>
+  <h1 class="welcome-title"><span class="grad-text" id="disp-names">Kamryn & Ted's Wedding</span></h1>
+  <p class="welcome-date" id="disp-date">October 3, 2026</p>
   <div class="divider" style="margin:12px 0"><div class="div-dot"></div></div>
   <p class="welcome-desc">Strike a pose and take home a gorgeous photo strip from our special day! 🎉</p>
   <button class="btn btn-primary" onclick="launchCamera()" style="margin-top:16px;font-size:18px;padding:18px 52px;">📸 Start the Booth!</button>
   <div class="conn-badge" id="conn-badge">
     <div class="conn-dot no" id="conn-dot"></div>
-    <span id="conn-text">⚠ Not connected to Google Drive</span>
+    <span id="conn-text">⚠ Not connected to Cloudinary</span>
   </div>
 </div>
 
@@ -229,7 +239,7 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 <!-- UPLOADING -->
 <div id="screen-uploading" class="screen">
   <div class="upload-spinner"></div>
-  <h2 class="s-head">Saving to <span class="grad-text">Wedding Folder…</span></h2>
+  <h2 class="s-head">Adding to <span class="grad-text">Wedding Gallery…</span></h2>
   <p class="s-sub">Uploading your strip right now!</p>
 </div>
 
@@ -237,14 +247,14 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 <div id="screen-done" class="screen">
   <div class="done-ring">🎉</div>
   <h2 class="s-head" id="done-head">Photo <span class="grad-text">Uploaded!</span></h2>
-  <p class="done-msg" id="done-msg">Your strip is in the wedding folder! Scan below to see all the photos.</p>
+  <p class="done-msg" id="done-msg">Your strip is in the wedding gallery! Scan below to see all the photos.</p>
   <div class="qr-card">
     <div class="qr-wrap">
       <img id="qr-img" src="" alt="QR Code">
       <div class="qr-c tl"></div><div class="qr-c tr"></div>
       <div class="qr-c bl"></div><div class="qr-c br"></div>
     </div>
-    <p class="qr-label">📸 <strong>Scan to see ALL wedding photos!</strong><br>Find your strip & share with family and friends</p>
+    <p class="qr-label">📸 <strong>Scan to see ALL wedding photos!</strong><br>No account needed — just scan and enjoy!</p>
   </div>
   <button class="btn btn-primary" onclick="restart()" style="margin-top:4px">Take Another Strip! 🎊</button>
   <p id="auto-reset-msg" style="font-size:12px;color:var(--text-soft);margin-top:4px;"></p>
@@ -254,12 +264,11 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
 <button id="settings-btn" onclick="showPinModal()">⚙</button>
 
 <!-- PIN MODAL -->
-<div id="pin-modal" style="display:none;position:fixed;inset:0;z-index:190;background:rgba(14,14,26,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+<div id="pin-modal" style="display:none;position:fixed;inset:0;z-index:190;background:rgba(14,14,26,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
   <div style="background:var(--bg);border-radius:24px;padding:32px 28px;width:90%;max-width:320px;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
     <div style="width:56px;height:56px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:24px;">🔒</div>
     <h3 style="font-family:var(--font-d);font-size:22px;font-weight:400;">Enter <span class="grad-text">PIN</span></h3>
-    <p style="font-size:13px;color:var(--text-soft);text-align:center;">Setup is PIN protected</p>
-    <div style="display:flex;gap:10px;justify-content:center;" id="pin-dots">
+    <div style="display:flex;gap:12px;justify-content:center;">
       <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--purple);background:transparent;" id="pd0"></div>
       <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--purple);background:transparent;" id="pd1"></div>
       <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--purple);background:transparent;" id="pd2"></div>
@@ -275,9 +284,9 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
       <button class="pin-key" onclick="pinKey(7)">7</button>
       <button class="pin-key" onclick="pinKey(8)">8</button>
       <button class="pin-key" onclick="pinKey(9)">9</button>
-      <button class="pin-key pin-clear" onclick="pinClear()" style="background:rgba(124,58,237,0.08);color:var(--purple);">⌫</button>
+      <button class="pin-key" onclick="pinClear()" style="background:rgba(124,58,237,0.08);color:var(--purple);">⌫</button>
       <button class="pin-key" onclick="pinKey(0)">0</button>
-      <button class="pin-key pin-cancel" onclick="closePinModal()" style="background:rgba(239,68,68,0.08);color:#ef4444;">✕</button>
+      <button class="pin-key" onclick="closePinModal()" style="background:rgba(239,68,68,0.08);color:#ef4444;">✕</button>
     </div>
     <p id="pin-error" style="font-size:12px;color:#ef4444;min-height:16px;"></p>
   </div>
@@ -293,73 +302,68 @@ body::after  { width:380px;height:380px;background:rgba(13,148,136,0.09);bottom:
   <div class="s-row"><label class="sl">Countdown Seconds</label><input class="si" id="c-cd" type="number" value="3" min="1" max="10"></div>
 
   <div class="divider" style="margin:6px 0"><div class="div-dot"></div></div>
-  <p class="sl">Google Drive — Auto Upload</p>
+  <p class="sl">Cloudinary — Auto Upload</p>
 
   <div class="s-note">
-    <strong>One-time setup (5 min):</strong><br>
-    1. Go to <a href="https://drive.google.com" target="_blank">drive.google.com</a><br>
-    2. Click <strong>New → Folder</strong> → name it "Kamryn & Ted Wedding Photos"<br>
-    3. Right-click the folder → <strong>Share → Change to Anyone with the link → Viewer</strong><br>
-    4. Click <strong>Copy link</strong> — paste it below<br>
-    5. The Folder ID is the long string in that URL after <code>/folders/</code>
+    <strong>Free 5-minute setup:</strong><br>
+    1. Go to <a href="https://cloudinary.com" target="_blank">cloudinary.com</a> → sign up free<br>
+    2. From the dashboard copy your <strong>Cloud Name</strong><br>
+    3. Go to <strong>Settings → Upload → Add upload preset</strong><br>
+    4. Set Signing Mode to <strong>Unsigned</strong> → Save → copy the preset name<br>
+    5. Paste both below — that's it! No login needed for guests ✓
   </div>
 
-  <div class="s-row">
-    <label class="sl">Google Drive Folder ID</label>
-    <input class="si" id="c-folder-id" placeholder="Paste the ID from your Drive folder URL">
-  </div>
-
-  <div class="s-row">
-    <label class="sl">Google Drive Folder Link (for QR code)</label>
-    <input class="si" id="c-folder-url" placeholder="https://drive.google.com/drive/folders/...">
-  </div>
-
-  <div class="s-row">
-    <label class="sl">Google OAuth Client ID</label>
-    <input class="si" id="c-client-id" placeholder="123456789-abc.apps.googleusercontent.com">
-  </div>
+  <div class="s-row"><label class="sl">Cloudinary Cloud Name</label><input class="si" id="c-cloud" placeholder="your-cloud-name"></div>
+  <div class="s-row"><label class="sl">Upload Preset Name</label><input class="si" id="c-preset" placeholder="your_unsigned_preset"></div>
+  <div class="s-row"><label class="sl">Gallery Tag (unique wedding identifier)</label><input class="si" id="c-tag" placeholder="kamryn-ted-2026"></div>
 
   <div class="s-note" style="border-left-color:var(--teal)">
-    <strong>In Google Cloud Console:</strong><br>
-    • APIs &amp; Services → Library → enable <strong>Google Drive API</strong><br>
-    • Credentials → OAuth Client ID → Web application<br>
-    • Add your GitHub Pages URL as Authorized JavaScript Origin<br>
-    • In Data Access, add scope: <strong>drive.file</strong><br>
-    (This scope does NOT require Google verification ✓)
+    <strong>Gallery page URL for QR code:</strong><br>
+    After uploading to GitHub, your gallery will be at:<br>
+    <code id="gallery-url-preview" style="font-size:11px;word-break:break-all;color:var(--teal);">https://yourusername.github.io/photo-booth/gallery.html</code><br><br>
+    <strong>To enable guest photo listing in Cloudinary:</strong><br>
+    Settings → Security → uncheck <strong>"Disable list resource type"</strong> → Save
   </div>
+
+  <div class="s-row"><label class="sl">Gallery Page URL (for QR code)</label><input class="si" id="c-gallery-url" placeholder="https://yourusername.github.io/photo-booth/gallery.html"></div>
 
   <!-- Connection status -->
   <div class="conn-status">
-    <div class="cs-dot off" id="s-dot"></div>
+    <div class="cs-dot" id="s-dot" class="off"></div>
     <div class="cs-text">
-      <span id="s-status-text">Not connected</span>
-      <small id="s-status-sub">Enter your Client ID then connect</small>
+      <span id="s-status-text">Not configured</span>
+      <small id="s-status-sub">Enter Cloud Name and Upload Preset to connect</small>
     </div>
   </div>
 
-  <button class="btn btn-green" id="connect-btn" onclick="connectGoogle()" style="margin-top:4px;max-width:300px">🔗 Connect to Google Drive</button>
-  <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:6px">✓ Save Settings</button>
+  <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:10px">✓ Save Settings</button>
   <button class="btn btn-outline" onclick="closeSettings()">✕ Close</button>
 </div>
 
 <script>
-// ── CONFIG ──
+// ════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════
 let cfg = {
-  names:    localStorage.getItem('cfg_names')    || "Kamryn & Ted",
-  date:     localStorage.getItem('cfg_date')     || "October 3, 2026",
-  count:    parseInt(localStorage.getItem('cfg_count'))   || 3,
-  cd:       parseInt(localStorage.getItem('cfg_cd'))      || 3,
-  clientId: localStorage.getItem('cfg_clientId') || "",
-  folderId: localStorage.getItem('cfg_folderId') || "",
-  folderUrl:localStorage.getItem('cfg_folderUrl')|| "",
+  names:      localStorage.getItem('cfg_names')      || "Kamryn & Ted",
+  date:       localStorage.getItem('cfg_date')       || "October 3, 2026",
+  count:      parseInt(localStorage.getItem('cfg_count'))    || 3,
+  cd:         parseInt(localStorage.getItem('cfg_cd'))       || 3,
+  cloudName:  localStorage.getItem('cfg_cloudName')  || "",
+  preset:     localStorage.getItem('cfg_preset')     || "",
+  tag:        localStorage.getItem('cfg_tag')        || "kamryn-ted-2026",
+  galleryUrl: localStorage.getItem('cfg_galleryUrl') || "",
 };
 
-// ── STATE ──
+// ════════════════════════════════════
+// STATE
+// ════════════════════════════════════
 let photos=[], stream=null, capturing=false, activeFilter="", stripURL="";
 let autoResetTimer=null;
-let gToken=null, gTokenExpiry=0, gTokenClient=null;
 
-// ── FILTERS ──
+// ════════════════════════════════════
+// FILTERS
+// ════════════════════════════════════
 const FILTERS=[
   {id:"",       label:"Original",icon:"✨",bg:"linear-gradient(135deg,#c4b5fd,#2dd4bf)"},
   {id:"noir",   label:"Noir",    icon:"⬛",bg:"#374151"},
@@ -384,133 +388,109 @@ const FCSS={
   "pop":"saturate(2.5) contrast(1.25) brightness(1.08) hue-rotate(10deg)",
 };
 
-// ── NAV ──
+// ════════════════════════════════════
+// NAV
+// ════════════════════════════════════
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
 }
 
-// ── GOOGLE DRIVE AUTH ──
-// Uses drive.file scope — no Google verification required!
-const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-
-function connectGoogle(){
-  const clientId = document.getElementById('c-client-id').value.trim();
-  if(!clientId){ alert('Please enter your Google Client ID first.'); return; }
-  cfg.clientId = clientId;
-  localStorage.setItem('cfg_clientId', clientId);
-  if(typeof google==='undefined'){
-    alert('Google library not loaded yet. Please wait a moment and try again.');
-    return;
-  }
-  gTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: cfg.clientId,
-    scope: DRIVE_SCOPE,
-    callback: (resp) => {
-      if(resp.error){ alert('Google sign-in failed: ' + resp.error); return; }
-      gToken = resp.access_token;
-      gTokenExpiry = Date.now() + (resp.expires_in * 1000);
-      updateConnectionUI(true);
+// ════════════════════════════════════
+// PIN
+// ════════════════════════════════════
+const CORRECT_PIN='1990';
+let pinEntry='';
+function showPinModal(){
+  pinEntry=''; updatePinDots();
+  document.getElementById('pin-error').textContent='';
+  document.getElementById('pin-modal').style.display='flex';
+}
+function closePinModal(){
+  document.getElementById('pin-modal').style.display='none';
+  pinEntry=''; updatePinDots();
+}
+function pinKey(n){
+  if(pinEntry.length>=4)return;
+  pinEntry+=n; updatePinDots();
+  if(pinEntry.length===4){
+    if(pinEntry===CORRECT_PIN){ closePinModal(); openSettings(); }
+    else{
+      document.getElementById('pin-error').textContent='Incorrect PIN. Try again.';
+      setTimeout(()=>{pinEntry='';updatePinDots();document.getElementById('pin-error').textContent='';},1000);
     }
-  });
-  gTokenClient.requestAccessToken();
+  }
+}
+function pinClear(){ pinEntry=pinEntry.slice(0,-1); updatePinDots(); }
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    document.getElementById('pd'+i).style.background=i<pinEntry.length?'var(--purple)':'transparent';
+  }
 }
 
-async function ensureToken(){
-  if(gToken && Date.now() < gTokenExpiry - 60000) return gToken;
-  return new Promise((resolve, reject)=>{
-    if(!cfg.clientId){ reject('No client ID'); return; }
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: cfg.clientId,
-      scope: DRIVE_SCOPE,
-      prompt: '',
-      callback: (resp)=>{
-        if(resp.error){ reject(resp.error); return; }
-        gToken = resp.access_token;
-        gTokenExpiry = Date.now() + (resp.expires_in * 1000);
-        resolve(gToken);
-      }
-    });
-    client.requestAccessToken({prompt:''});
-  });
+// ════════════════════════════════════
+// CLOUDINARY UPLOAD
+// ════════════════════════════════════
+function isConfigured(){
+  return cfg.cloudName && cfg.preset;
 }
 
-function updateConnectionUI(connected){
-  // Welcome badge — hide when connected, show warning when not
+async function uploadToCloudinary(imageDataURL){
+  if(!isConfigured()) throw new Error('Cloudinary not configured — check Setup');
+  const res = await fetch(imageDataURL);
+  const blob = await res.blob();
+  const form = new FormData();
+  form.append('file', blob);
+  form.append('upload_preset', cfg.preset);
+  form.append('tags', cfg.tag);
+  form.append('folder', 'wedding-booth');
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cfg.cloudName}/image/upload`,
+    { method:'POST', body:form }
+  );
+  if(!response.ok){
+    const err = await response.json();
+    throw new Error(err.error?.message || 'Upload failed: ' + response.status);
+  }
+  return await response.json();
+}
+
+function updateConnectionUI(){
+  const connected = isConfigured();
   const badge = document.getElementById('conn-badge');
   if(badge) badge.style.display = connected ? 'none' : 'flex';
   document.getElementById('conn-dot').className = 'conn-dot ' + (connected?'ok':'no');
   document.getElementById('conn-text').textContent = connected
-    ? '✓ Connected to Google Drive' : '⚠ Not connected to Google Drive';
-  // Settings status
+    ? '✓ Connected to Cloudinary' : '⚠ Not connected to Cloudinary';
   document.getElementById('s-dot').className = 'cs-dot ' + (connected?'on':'off');
-  document.getElementById('s-status-text').textContent = connected ? 'Connected!' : 'Not connected';
+  document.getElementById('s-status-text').textContent = connected ? 'Connected — ready to upload!' : 'Not configured';
   document.getElementById('s-status-sub').textContent = connected
-    ? 'Photos upload automatically to your Drive folder'
-    : 'Enter your Client ID then connect';
+    ? `Cloud: ${cfg.cloudName} · Preset: ${cfg.preset}`
+    : 'Enter Cloud Name and Upload Preset above';
 }
 
-// ── UPLOAD TO GOOGLE DRIVE ──
-async function uploadToDrive(imageDataURL){
-  const token = await ensureToken();
-  const folderId = cfg.folderId;
-  if(!folderId) throw new Error('No folder ID set — please add it in Setup');
-
-  // Convert dataURL to blob
-  const fetchRes = await fetch(imageDataURL);
-  const blob = await fetchRes.blob();
-
-  const filename = 'WeddingStrip_' + new Date().toISOString().replace(/[:.]/g,'-') + '.jpg';
-
-  // Multipart upload to Google Drive
-  const metadata = JSON.stringify({
-    name: filename,
-    parents: [folderId],
-    mimeType: 'image/jpeg'
-  });
-
-  const form = new FormData();
-  form.append('metadata', new Blob([metadata], {type:'application/json'}));
-  form.append('file', blob);
-
-  const res = await fetch(
-    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
-    {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + token },
-      body: form
-    }
-  );
-
-  if(!res.ok){
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Upload failed: ' + res.status);
-  }
-  return await res.json();
-}
-
-// ── CAMERA ──
+// ════════════════════════════════════
+// CAMERA
+// ════════════════════════════════════
 async function launchCamera(){
   photos=[]; capturing=false; activeFilter="";
-  document.getElementById("shutter").disabled=false;
+  document.getElementById('shutter').disabled=false;
   goTo('camera'); buildDots(); buildFilters(); updateBadge();
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false
     });
-    document.getElementById('video').srcObject = stream;
+    document.getElementById('video').srcObject=stream;
   } catch {
     alert("Camera access needed! Please allow camera access in your browser settings.");
   }
 }
-
 function buildDots(){
   const w=document.getElementById('cam-dots'); w.innerHTML='';
   for(let i=0;i<cfg.count;i++){
     const d=document.createElement('div');d.className='dot';d.id='dot-'+i;w.appendChild(d);
   }
 }
-
 function buildFilters(){
   const strip=document.getElementById('filter-strip'); strip.innerHTML='';
   FILTERS.forEach(f=>{
@@ -521,17 +501,14 @@ function buildFilters(){
     strip.appendChild(ch);
   });
 }
-
 function applyFilter(id){
   activeFilter=id;
   document.getElementById('video').className=id?'f-'+id:'';
   document.querySelectorAll('.fchip').forEach((c,i)=>c.classList.toggle('active',FILTERS[i].id===id));
 }
-
 function updateBadge(){
   document.getElementById('cam-badge').textContent=`Photo ${photos.length+1} of ${cfg.count}`;
 }
-
 function startCountdown(){
   if(capturing)return;
   capturing=true;
@@ -544,7 +521,6 @@ function startCountdown(){
   };
   tick();
 }
-
 function capturePhoto(){
   const vid=document.getElementById('video');
   const fl=document.getElementById('flash');
@@ -554,7 +530,6 @@ function capturePhoto(){
   const ctx=c.getContext('2d');
   const css=FCSS[activeFilter]||"";
   if(css)ctx.filter=css;
-  // Draw without mirror flip so saved photo is not reversed
   ctx.drawImage(vid,0,0);
   photos.push(c.toDataURL('image/jpeg',0.88));
   document.getElementById('dot-'+(photos.length-1)).classList.add('taken');
@@ -566,26 +541,27 @@ function capturePhoto(){
       document.getElementById('cam-msg').textContent=`${photos.length} done! Tap for next pose 🎉`;
     },700);
   } else {
-    setTimeout(async ()=>{ stopCamera(); await buildPreview(); goTo('preview'); },700);
+    setTimeout(async()=>{stopCamera(); await buildPreview(); goTo('preview');},700);
   }
 }
-
 function stopCamera(){
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
 }
 
-// ── STRIP ──
+// ════════════════════════════════════
+// STRIP COMPOSITING
+// ════════════════════════════════════
 async function buildPreview(){
   const w=document.getElementById('strip-imgs'); w.innerHTML='';
   photos.forEach(src=>{
     const i=document.createElement('img');i.className='strip-img';i.src=src;w.appendChild(i);
   });
-  document.getElementById('s-names').textContent=cfg.names; await buildCanvas();
+  document.getElementById('s-names').textContent=cfg.names;
   document.getElementById('s-date').textContent=cfg.date;
-
+  await buildCanvas();
 }
 
-function buildCanvas(){ return new Promise(resolveCanvas=>{
+function buildCanvas(){ return new Promise(resolve=>{
   const W=640,pH=Math.round(W*0.625),gap=16,pad=22,fh=90;
   const H=pad+cfg.count*(pH+gap)-gap+fh+pad;
   const cv=document.getElementById('comp-canvas');cv.width=W;cv.height=H;
@@ -619,18 +595,18 @@ function buildCanvas(){ return new Promise(resolveCanvas=>{
     ctx.fillText(cfg.date.toUpperCase(),W/2,fy+60);
     ctx.fillStyle='#2dd4bf';ctx.font='13px serif';ctx.fillText('♥  ♥  ♥',W/2,fy+76);
     ctx.fillStyle=tg;ctx.fillRect(0,H-6,W,6);
-    stripURL=cv.toDataURL('image/jpeg',0.9); resolveCanvas();
+    stripURL=cv.toDataURL('image/jpeg',0.9);
+    resolve();
   });
-}); }
+});}
 
 function drawCover(ctx,img,x,y,w,h){
-  const ir=img.width/img.height, sr=w/h;
+  const ir=img.width/img.height,sr=w/h;
   let sx,sy,sw,sh;
-  if(ir>sr){ sh=img.height; sw=sh*sr; sx=(img.width-sw)/2; sy=0; }
-  else { sw=img.width; sh=sw/sr; sx=0; sy=(img.height-sh)/2; }
+  if(ir>sr){sh=img.height;sw=sh*sr;sx=(img.width-sw)/2;sy=0;}
+  else{sw=img.width;sh=sw/sr;sx=0;sy=(img.height-sh)/2;}
   ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
 }
-
 function rr(ctx,x,y,w,h,r){
   ctx.beginPath();
   ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
@@ -639,47 +615,29 @@ function rr(ctx,x,y,w,h,r){
   ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
 }
 
-// ── SAVE & UPLOAD ──
+// ════════════════════════════════════
+// SAVE & UPLOAD
+// ════════════════════════════════════
 async function saveAndUpload(){
   goTo('uploading');
-  
-
-  const connected = gToken && Date.now() < gTokenExpiry && cfg.folderId;
-
-  if(connected){
+  if(isConfigured()){
     try {
-      await uploadToDrive(stripURL);
+      await uploadToCloudinary(stripURL);
       document.getElementById('done-head').innerHTML='Photo <span class="grad-text">Uploaded!</span>';
-      document.getElementById('done-msg').textContent='Your strip is live in the wedding folder! Scan below to see all the photos. 🎉';
+      document.getElementById('done-msg').textContent='Your strip is live in the wedding gallery! Scan the QR code to see all photos. 🎉';
     } catch(e){
-      console.error('Drive upload failed:', e);
+      console.error(e);
       triggerDownload();
       document.getElementById('done-head').innerHTML='Photo <span class="grad-text">Saved!</span>';
-      document.getElementById('done-msg').textContent='Saved to this device! (' + e.message + ')';
+      document.getElementById('done-msg').textContent='Saved to device! (Upload error: '+e.message+')';
     }
   } else {
     triggerDownload();
     document.getElementById('done-head').innerHTML='Photo <span class="grad-text">Saved!</span>';
-    document.getElementById('done-msg').textContent='Saved to this device! Connect Google Drive in ⚙ Setup for automatic uploading.';
+    document.getElementById('done-msg').textContent='Saved to device! Set up Cloudinary in ⚙ Setup for automatic gallery upload.';
   }
   goTo('done');
   startAutoReset();
-}
-
-function startAutoReset(){
-  if(autoResetTimer) clearInterval(autoResetTimer);
-  let secs = 60;
-  const msg = document.getElementById("auto-reset-msg");
-  if(msg) msg.textContent = "Returning to start in " + secs + "s…";
-  autoResetTimer = setInterval(()=>{
-    secs--;
-    if(msg) msg.textContent = "Returning to start in " + secs + "s…";
-    if(secs <= 0){
-      clearInterval(autoResetTimer);
-      autoResetTimer = null;
-      restart();
-    }
-  }, 1000);
 }
 
 function triggerDownload(){
@@ -689,111 +647,86 @@ function triggerDownload(){
   a.click();
 }
 
-function retake(){photos=[];capturing=false;launchCamera();}
-function restart(){if(autoResetTimer){clearInterval(autoResetTimer);autoResetTimer=null;}photos=[];capturing=false;stripURL="";document.getElementById("shutter").disabled=false;goTo('welcome');}
-
-// ── SETTINGS ──
-// ── PIN ──
-const CORRECT_PIN = '1990';
-let pinEntry = '';
-
-function showPinModal(){
-  pinEntry = '';
-  updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-  const modal = document.getElementById('pin-modal');
-  modal.style.display = 'flex';
-}
-function closePinModal(){
-  document.getElementById('pin-modal').style.display = 'none';
-  pinEntry = '';
-  updatePinDots();
-}
-function pinKey(n){
-  if(pinEntry.length >= 4) return;
-  pinEntry += n;
-  updatePinDots();
-  if(pinEntry.length === 4){
-    if(pinEntry === CORRECT_PIN){
-      closePinModal();
-      openSettings();
-    } else {
-      document.getElementById('pin-error').textContent = 'Incorrect PIN. Try again.';
-      // Shake and reset
-      setTimeout(()=>{ pinEntry=''; updatePinDots(); document.getElementById('pin-error').textContent=''; }, 1000);
-    }
-  }
-}
-function pinClear(){
-  pinEntry = pinEntry.slice(0,-1);
-  updatePinDots();
-}
-function updatePinDots(){
-  for(let i=0;i<4;i++){
-    const d = document.getElementById('pd'+i);
-    d.style.background = i < pinEntry.length ? 'var(--purple)' : 'transparent';
-  }
+function startAutoReset(){
+  if(autoResetTimer) clearInterval(autoResetTimer);
+  let secs=60;
+  const msg=document.getElementById('auto-reset-msg');
+  if(msg) msg.textContent='Returning to start in '+secs+'s…';
+  autoResetTimer=setInterval(()=>{
+    secs--;
+    if(msg) msg.textContent='Returning to start in '+secs+'s…';
+    if(secs<=0){ clearInterval(autoResetTimer); autoResetTimer=null; restart(); }
+  },1000);
 }
 
+function retake(){ photos=[]; capturing=false; launchCamera(); }
+function restart(){
+  if(autoResetTimer){ clearInterval(autoResetTimer); autoResetTimer=null; }
+  photos=[]; capturing=false; stripURL="";
+  document.getElementById('shutter').disabled=false;
+  goTo('welcome');
+}
+
+// ════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════
 function openSettings(){
-  document.getElementById('c-names').value=cfg.names;
-  document.getElementById('c-date').value=cfg.date;
-  document.getElementById('c-count').value=cfg.count;
-  document.getElementById('c-cd').value=cfg.cd;
-  document.getElementById('c-client-id').value=cfg.clientId;
-  document.getElementById('c-folder-id').value=cfg.folderId;
-  document.getElementById('c-folder-url').value=cfg.folderUrl;
-  if(gToken && Date.now()<gTokenExpiry) updateConnectionUI(true);
+  document.getElementById('c-names').value   = cfg.names;
+  document.getElementById('c-date').value    = cfg.date;
+  document.getElementById('c-count').value   = cfg.count;
+  document.getElementById('c-cd').value      = cfg.cd;
+  document.getElementById('c-cloud').value   = cfg.cloudName;
+  document.getElementById('c-preset').value  = cfg.preset;
+  document.getElementById('c-tag').value     = cfg.tag;
+  document.getElementById('c-gallery-url').value = cfg.galleryUrl;
+  updateConnectionUI();
   document.getElementById('settings-panel').classList.add('open');
 }
-function closeSettings(){document.getElementById('settings-panel').classList.remove('open');}
+function closeSettings(){ document.getElementById('settings-panel').classList.remove('open'); }
 
 function saveSettings(){
-  cfg.names     = document.getElementById('c-names').value.trim()     || cfg.names;
-  cfg.date      = document.getElementById('c-date').value.trim()      || cfg.date;
-  cfg.count     = Math.min(4,Math.max(1,+document.getElementById('c-count').value||3));
-  cfg.cd        = Math.min(10,Math.max(1,+document.getElementById('c-cd').value||3));
-  cfg.clientId  = document.getElementById('c-client-id').value.trim();
-  cfg.folderId  = document.getElementById('c-folder-id').value.trim();
-  cfg.folderUrl = document.getElementById('c-folder-url').value.trim();
+  cfg.names      = document.getElementById('c-names').value.trim()   || cfg.names;
+  cfg.date       = document.getElementById('c-date').value.trim()    || cfg.date;
+  cfg.count      = Math.min(4,Math.max(1,+document.getElementById('c-count').value||3));
+  cfg.cd         = Math.min(10,Math.max(1,+document.getElementById('c-cd').value||3));
+  cfg.cloudName  = document.getElementById('c-cloud').value.trim();
+  cfg.preset     = document.getElementById('c-preset').value.trim();
+  cfg.tag        = document.getElementById('c-tag').value.trim()     || 'kamryn-ted-2026';
+  cfg.galleryUrl = document.getElementById('c-gallery-url').value.trim();
 
-  localStorage.setItem('cfg_names',     cfg.names);
-  localStorage.setItem('cfg_date',      cfg.date);
-  localStorage.setItem('cfg_count',     cfg.count);
-  localStorage.setItem('cfg_cd',        cfg.cd);
-  localStorage.setItem('cfg_clientId',  cfg.clientId);
-  localStorage.setItem('cfg_folderId',  cfg.folderId);
-  localStorage.setItem('cfg_folderUrl', cfg.folderUrl);
+  localStorage.setItem('cfg_names',      cfg.names);
+  localStorage.setItem('cfg_date',       cfg.date);
+  localStorage.setItem('cfg_count',      cfg.count);
+  localStorage.setItem('cfg_cd',         cfg.cd);
+  localStorage.setItem('cfg_cloudName',  cfg.cloudName);
+  localStorage.setItem('cfg_preset',     cfg.preset);
+  localStorage.setItem('cfg_tag',        cfg.tag);
+  localStorage.setItem('cfg_galleryUrl', cfg.galleryUrl);
 
   const init=cfg.names.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
   document.getElementById('monogram').textContent=init;
   document.getElementById('disp-names').textContent=cfg.names+"'s Wedding";
   document.getElementById('disp-date').textContent=cfg.date;
+  updateConnectionUI();
   updateQR();
   closeSettings();
 }
 
 function updateQR(){
-  const url=cfg.folderUrl||'https://drive.google.com';
+  const url = cfg.galleryUrl || 'https://photos.app.goo.gl/placeholder';
   document.getElementById('qr-img').src=
     `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=7c3aed&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
 }
 
-// ── INIT ──
+// ════════════════════════════════════
+// INIT
+// ════════════════════════════════════
 updateQR();
+updateConnectionUI();
 document.getElementById('disp-names').textContent = cfg.names + "'s Wedding";
-document.getElementById('disp-date').textContent = cfg.date;
-const _init = cfg.names.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
-document.getElementById('monogram').textContent = _init;
-document.getElementById('c-client-id').value = cfg.clientId;
-document.getElementById('c-folder-id').value = cfg.folderId;
-document.getElementById('c-folder-url').value = cfg.folderUrl;
-
-// Hide connection badge on load if already connected
-if(typeof gToken !== 'undefined' && gToken && Date.now() < gTokenExpiry){
-  const badge = document.getElementById('conn-badge');
-  if(badge) badge.style.display = 'none';
-}
+document.getElementById('disp-date').textContent  = cfg.date;
+const _i=cfg.names.split(/\s*&\s*/).map(n=>n.trim()[0]||'').join('&');
+document.getElementById('monogram').textContent=_i;
 
 if('wakeLock'in navigator){
   const rw=()=>navigator.wakeLock.request('screen').catch(()=>{});
